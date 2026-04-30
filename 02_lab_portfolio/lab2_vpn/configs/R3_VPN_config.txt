@@ -1,0 +1,139 @@
+! R3 Running Configuration - Lab 2 IPSec VPN
+! Date: February 9, 2026
+! Includes: ZPF (from Lab 1) + ISAKMP, transform set, crypto map, OSPF
+! Additional: INTERNET_TO_INSIDE zone-pair for IDS testing (ICMP)
+!
+hostname R3
+!
+enable password class12345
+!
+no aaa new-model
+!
+memory-size iomem 15
+!
+ip cef
+!
+no ip domain lookup
+ip domain name networksecurity.com
+!
+username admin01 password 0 cisco12345
+!
+redundancy
+!
+! === ZPF CLASS MAPS (from Lab 1) ===
+class-map type inspect match-any CONFROOM_PROTOCOLS
+ match protocol http
+ match protocol https
+ match protocol dns
+class-map type inspect match-any INSIDE_PROTOCOLS
+ match protocol tcp
+ match protocol udp
+ match protocol icmp
+class-map type inspect match-any CLASS_INTERNET_TO_INSIDE
+ match access-group name ACL_INTERNET_TO_INSIDE
+!
+! === ZPF POLICY MAPS ===
+policy-map type inspect CONFROOM_TO_INTERNET
+ class type inspect CONFROOM_PROTOCOLS
+  inspect
+ class class-default
+  drop
+policy-map type inspect INSIDE_TO_INTERNET
+ class type inspect INSIDE_PROTOCOLS
+  inspect
+ class class-default
+  drop
+policy-map type inspect INTERNET_TO_INSIDE
+ class type inspect CLASS_INTERNET_TO_INSIDE
+  inspect
+ class class-default
+  drop
+!
+! === SECURITY ZONES ===
+zone security INSIDE
+zone security CONFROOM
+zone security INTERNET
+!
+! === ZONE PAIRS ===
+zone-pair security INSIDE_TO_INTERNET source INSIDE destination INTERNET
+ service-policy type inspect INSIDE_TO_INTERNET
+zone-pair security CONFROOM_TO_INTERNET source CONFROOM destination INTERNET
+ service-policy type inspect CONFROOM_TO_INTERNET
+zone-pair security INTERNET_TO_INSIDE source INTERNET destination INSIDE
+ service-policy type inspect INTERNET_TO_INSIDE
+!
+! === IKE PHASE 1 (ISAKMP) ===
+crypto isakmp policy 10
+ encr aes 256
+ authentication pre-share
+ group 14
+ lifetime 3600
+crypto isakmp key cisco123 address 10.1.1.1
+!
+! === IKE PHASE 2 (IPSec) ===
+crypto ipsec security-association lifetime seconds 1800
+!
+crypto ipsec transform-set 50 esp-aes 256 esp-sha-hmac
+!
+! === CRYPTO MAP ===
+crypto map CMAP 10 ipsec-isakmp
+ set peer 10.1.1.1
+ set security-association lifetime seconds 900
+ set transform-set 50
+ set pfs group14
+ match address 101
+!
+interface FastEthernet0/0
+ ip address 192.168.33.136 255.255.255.128
+ zone-member security CONFROOM
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 192.168.3.136 255.255.255.128
+ zone-member security INSIDE
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ no ip address
+ shutdown
+!
+interface Serial0/0/1
+ ip address 10.2.2.1 255.255.255.0
+ zone-member security INTERNET
+ crypto map CMAP
+!
+! === OSPF ROUTING ===
+router ospf 101
+ log-adjacency-changes
+ network 10.2.2.0 0.0.0.3 area 0
+ network 192.168.3.128 0.0.0.127 area 0
+ network 192.168.33.128 0.0.0.127 area 0
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+ip route 0.0.0.0 0.0.0.0 10.2.2.2
+!
+! === ACL FOR INTERNET TO INSIDE (IDS TESTING) ===
+ip access-list extended ACL_INTERNET_TO_INSIDE
+ permit icmp any host 192.168.3.134
+!
+! === VPN INTERESTING TRAFFIC ACL ===
+access-list 101 permit ip 192.168.3.128 0.0.0.127 192.168.1.128 0.0.0.127
+!
+line con 0
+ exec-timeout 5 0
+ logging synchronous
+ login local
+line aux 0
+ exec-timeout 5 0
+ login local
+line vty 0 4
+ exec-timeout 5 0
+ login local
+ transport input ssh
+!
+end

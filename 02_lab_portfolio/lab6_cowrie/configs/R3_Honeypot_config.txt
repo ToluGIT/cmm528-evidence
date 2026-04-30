@@ -1,0 +1,38 @@
+! R3 Running Config - Lab 6 Honeypot (9 Mar 2026)
+! Key changes: Expanded ACL_INTERNET_TO_INSIDE for honeypot traffic,
+! Added INTERNET_TO_CONFROOM zone-pair for Cowrie on CONFROOM subnet
+
+! === Zone-Pair Additions ===
+zone-pair security INTERNET_TO_CONFROOM source INTERNET destination CONFROOM
+ service-policy type inspect INTERNET_TO_CONFROOM
+
+! === Class-Map Updates (CONFROOM now allows ICMP + TCP) ===
+class-map type inspect match-any CONFROOM_PROTOCOLS
+ match protocol http
+ match protocol https
+ match protocol dns
+ match protocol icmp
+ match protocol tcp
+
+! === New Policy-Map for INTERNET_TO_CONFROOM ===
+policy-map type inspect INTERNET_TO_CONFROOM
+ class type inspect CLASS_INTERNET_TO_CONFROOM
+  inspect
+ class class-default
+  drop
+
+! === ACL for INTERNET_TO_CONFROOM ===
+ip access-list extended ACL_INTERNET_TO_CONFROOM
+ permit icmp any host 192.168.33.150
+ permit tcp host 192.168.1.150 host 192.168.33.150 eq 22
+
+! === Expanded ACL_INTERNET_TO_INSIDE (allows honeypot-related traffic) ===
+ip access-list extended ACL_INTERNET_TO_INSIDE
+ permit icmp any host 192.168.3.134
+ permit tcp any host 192.168.3.134 eq 22
+ permit tcp any host 192.168.3.134 eq telnet
+ permit tcp any host 192.168.3.134 eq www
+ permit tcp any host 192.168.3.134 eq 135
+ permit tcp any host 192.168.3.134 eq 139
+ permit tcp any host 192.168.3.134 eq 445
+ permit tcp any host 192.168.3.134 eq 3389

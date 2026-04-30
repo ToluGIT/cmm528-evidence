@@ -1,0 +1,69 @@
+! R2 Running Configuration - Lab 2 IPSec VPN
+! Date: February 9, 2026
+! R2 acts as ISP/transit router between R1 and R3
+! Includes: OSPF routing, static routes for both sites
+!
+hostname R2
+!
+enable password class12345
+!
+no aaa new-model
+!
+memory-size iomem 15
+!
+ip cef
+!
+no ip domain lookup
+ip domain name networksecurity.com
+!
+username admin01 password 0 cisco12345
+!
+redundancy
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ ip address 10.1.1.2 255.255.255.252
+!
+interface Serial0/0/1
+ ip address 10.2.2.2 255.255.255.252
+ clock rate 64000
+!
+! === OSPF ROUTING ===
+router ospf 101
+ log-adjacency-changes
+ network 10.1.1.0 0.0.0.3 area 0
+ network 10.2.2.0 0.0.0.3 area 0
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+! === STATIC ROUTES ===
+ip route 192.168.1.128 255.255.255.128 10.1.1.1
+ip route 192.168.3.128 255.255.255.128 10.2.2.1
+ip route 192.168.33.128 255.255.255.128 10.2.2.1
+!
+line con 0
+ exec-timeout 5 0
+ logging synchronous
+ login local
+line aux 0
+ exec-timeout 5 0
+ login local
+line vty 0 4
+ exec-timeout 5 0
+ login local
+ transport input ssh
+!
+end

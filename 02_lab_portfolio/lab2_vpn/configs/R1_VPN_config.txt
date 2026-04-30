@@ -1,0 +1,90 @@
+! R1 Running Configuration - Lab 2 IPSec VPN
+! Date: February 9, 2026
+! Includes: ISAKMP policy, transform set, crypto map, OSPF routing
+!
+hostname R1
+!
+enable password class12345
+!
+no aaa new-model
+!
+memory-size iomem 15
+!
+ip cef
+!
+no ip domain lookup
+ip domain name networksecurity.com
+!
+username admin01 password 0 cisco12345
+!
+redundancy
+!
+! === IKE PHASE 1 (ISAKMP) ===
+crypto isakmp policy 10
+ encr aes 256
+ authentication pre-share
+ group 14
+ lifetime 3600
+crypto isakmp key cisco123 address 10.2.2.1
+!
+! === IKE PHASE 2 (IPSec) ===
+crypto ipsec security-association lifetime seconds 1800
+!
+crypto ipsec transform-set 50 esp-aes 256 esp-sha-hmac
+!
+! === CRYPTO MAP ===
+crypto map CMAP 10 ipsec-isakmp
+ set peer 10.2.2.1
+ set security-association lifetime seconds 900
+ set transform-set 50
+ set pfs group14
+ match address 101
+!
+interface FastEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ ip address 192.168.1.136 255.255.255.128
+ duplex auto
+ speed auto
+!
+interface Serial0/0/0
+ ip address 10.1.1.1 255.255.255.252
+ clock rate 64000
+ crypto map CMAP
+!
+interface Serial0/0/1
+ no ip address
+ shutdown
+!
+! === OSPF ROUTING ===
+router ospf 101
+ log-adjacency-changes
+ network 10.1.1.0 0.0.0.3 area 0
+ network 192.168.1.128 0.0.0.127 area 0
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+ip route 0.0.0.0 0.0.0.0 10.1.1.2
+!
+! === VPN INTERESTING TRAFFIC ACL ===
+access-list 101 permit ip 192.168.1.128 0.0.0.127 192.168.3.128 0.0.0.127
+!
+line con 0
+ exec-timeout 5 0
+ logging synchronous
+ login local
+line aux 0
+ exec-timeout 5 0
+ login local
+line vty 0 4
+ exec-timeout 5 0
+ login local
+ transport input ssh
+!
+end

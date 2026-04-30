@@ -1,0 +1,28 @@
+# Cowrie Honeypot Setup - Lab 6 (9 Mar 2026)
+# Deployed on Ubuntu 24.04 VM (ubuntu2404)
+
+# Cowrie installed at: /home/cowrie/cowrie/
+# Virtual environment: /home/cowrie/cowrie/cowrie-env/
+# Listening on: port 2222 (SSH honeypot)
+# Honeypot hostname emulated: svr04
+
+# --- Start Cowrie ---
+sudo su - cowrie
+cd /home/cowrie/cowrie
+source cowrie-env/bin/activate
+bin/cowrie start
+bin/cowrie status
+
+# --- Cowrie Detect Tool ---
+# Used cowrie_detect.py to verify honeypot detection
+# Result: 100.0 / 110 (90.91%) - Detected as Cowrie honeypot
+python cowrie_detect.py 192.168.33.150
+
+# --- Port Redirection ---
+# SSH traffic on port 22 redirected to Cowrie on port 2222
+# via iptables NAT PREROUTING rule
+
+# --- Key Log Files ---
+# JSON log: /home/cowrie/cowrie/var/log/cowrie/cowrie.json
+# Text log: /home/cowrie/cowrie/var/log/cowrie/cowrie.log
+# TTY logs: /home/cowrie/cowrie/var/lib/cowrie/ttylog/

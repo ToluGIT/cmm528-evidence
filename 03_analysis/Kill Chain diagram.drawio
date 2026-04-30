@@ -1,0 +1,73 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.6.6">
+  <diagram name="Page-1" id="gD5VyuJSIxa_9TXgahbz">
+    <mxGraphModel dx="1049" dy="609" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=18;fontColor=#FFFFFF;" value="&lt;b&gt;&lt;font style=&quot;color: light-dark(rgb(0, 0, 0), rgb(92, 91, 91));&quot;&gt;CYBER KILL CHAIN: February 20, 2025 Attack&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="34" width="410" x="236" y="23" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow1" parent="1" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;size=0.15;fillColor=#4A4A4A;strokeColor=#333333;fontColor=#CCCCCC;fontSize=11;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;RECONNAISSANCE&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="130" x="10" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="detail1" parent="1" style="text;html=1;align=center;verticalAlign=top;resizable=0;points=[];autosize=0;fontColor=#999999;" value="&lt;font style=&quot;font-size:8px&quot;&gt;&lt;b&gt;EK infrastructure&lt;br&gt;pre-staged&lt;br&gt;&lt;i&gt;(before observed window)&lt;/i&gt;&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="120" x="10" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" parent="1" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;size=0.15;fillColor=#4A4A4A;strokeColor=#333333;fontColor=#CCCCCC;fontSize=11;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;WEAPONISATION&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="130" x="130" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="detail2" parent="1" style="text;html=1;align=center;verticalAlign=top;resizable=0;points=[];autosize=0;fontColor=#999999;" value="&lt;font style=&quot;font-size:8px&quot;&gt;&lt;b&gt;Flash exploit&lt;br&gt;(CVE-2015-8651)&lt;br&gt;+ Smoke Loader payload&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="50" width="120" x="130" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" parent="1" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;size=0.15;fillColor=#E6550D;strokeColor=#B33D00;fontColor=#FFFFFF;fontSize=11;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;DELIVERY&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="130" x="250" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="detail3" parent="1" style="text;html=1;align=center;verticalAlign=top;resizable=0;points=[];autosize=0;fontColor=#E6550D;" value="&lt;font style=&quot;font-size:8px&quot;&gt;&lt;b&gt;03:36:39&lt;/b&gt;&lt;br&gt;Browser redirect to&lt;br&gt;SunDown/RIG EK&lt;br&gt;188.227.16.131&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="250" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" parent="1" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;size=0.15;fillColor=#CC0000;strokeColor=#990000;fontColor=#FFFFFF;fontSize=11;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;EXPLOITATION&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="130" x="370" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="detail4" parent="1" style="text;html=1;align=center;verticalAlign=top;resizable=0;points=[];autosize=0;fontColor=#CC0000;" value="&lt;font style=&quot;font-size:8px&quot;&gt;&lt;b&gt;03:36:40&lt;/b&gt;&lt;br&gt;CVE-2015-8651&lt;br&gt;Flash integer overflow&lt;br&gt;CollectGarbage&lt;br&gt;use-after-free&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="120" x="370" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" parent="1" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;size=0.15;fillColor=#CC0000;strokeColor=#990000;fontColor=#FFFFFF;fontSize=11;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;INSTALLATION&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="130" x="490" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="detail5" parent="1" style="text;html=1;align=center;verticalAlign=top;resizable=0;points=[];autosize=0;fontColor=#CC0000;" value="&lt;font style=&quot;font-size:8px&quot;&gt;&lt;b&gt;03:37:22 — 03:38:01&lt;/b&gt;&lt;br&gt;Smoke Loader trojan&lt;br&gt;+ bprocess.exe (809KB)&lt;br&gt;from 104.236.16.69&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="490" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6" parent="1" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;size=0.15;fillColor=#D4620E;strokeColor=#A34D0B;fontColor=#FFFFFF;fontSize=11;verticalAlign=top;spacingTop=5;" value="&lt;b&gt;C2&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="130" x="610" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="detail6" parent="1" style="text;html=1;align=center;verticalAlign=top;resizable=0;points=[];autosize=0;fontColor=#D4620E;" value="&lt;font style=&quot;font-size:8px&quot;&gt;&lt;b&gt;03:37:22+&lt;/b&gt;&lt;br&gt;HTTP POST beacons&lt;br&gt;to saumottam.ru&lt;br&gt;Fake 404 responses&lt;br&gt;20 alerts / 43 sec&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="120" x="610" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7" parent="1" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;size=0.15;fillColor=#8B0000;strokeColor=#660000;fontColor=#FFFFFF;fontSize=11;verticalAlign=top;spacingTop=2;" value="&lt;b&gt;ACTIONS ON&lt;br&gt;OBJECTIVES&lt;/b&gt;" vertex="1">
+          <mxGeometry height="80" width="140" x="730" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="detail7" parent="1" style="text;html=1;align=center;verticalAlign=top;resizable=0;points=[];autosize=0;fontColor=#8B0000;" value="&lt;font style=&quot;font-size:8px&quot;&gt;&lt;b&gt;03:43:35&lt;/b&gt;&lt;br&gt;XMRig v2.4.2&lt;br&gt;Monero mining&lt;br&gt;pool.minexmr.com:5555&lt;br&gt;5 pool servers&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="130" x="730" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="timebar" parent="1" style="shape=line;strokeColor=#666666;strokeWidth=2;dashed=1;" value="" vertex="1">
+          <mxGeometry height="10" width="602" x="250" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="timelabel" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontColor=#999999;" value="&lt;font style=&quot;font-size:9px&quot;&gt;&lt;b&gt;12-minute attack window&lt;/b&gt; (03:36:39 — 03:48:49 UTC) | 98 IDS alerts&amp;nbsp;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="560" x="280" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="alerts3" parent="1" style="text;html=1;align=center;" value="&lt;font style=&quot;font-size: 7px;&quot; color=&quot;#FFAA00&quot;&gt;&lt;b&gt;40 alerts / 6 sec&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="18" width="90" x="270" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="alerts4" parent="1" style="" value="" vertex="1">
+          <mxGeometry as="geometry" />
+        </mxCell>
+        <mxCell id="alerts5" parent="1" style="text;html=1;align=center;" value="&lt;font style=&quot;font-size: 7px;&quot; color=&quot;#FFAA00&quot;&gt;&lt;b&gt;50 alerts / 43 sec&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="18" width="100" x="505" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="alerts7" parent="1" style="text;html=1;align=center;" value="&lt;font style=&quot;font-size: 7px;&quot; color=&quot;#FFAA00&quot;&gt;&lt;b&gt;8 alerts / 5 min&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="18" width="90" x="750" y="121" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

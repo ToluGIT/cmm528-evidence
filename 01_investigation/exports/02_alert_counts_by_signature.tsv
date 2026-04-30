@@ -1,0 +1,15 @@
+signature	cnt
+ET CURRENT_EVENTS SunDown EK RIP Landing M1 B642	14
+ET INFO SUSPICIOUS Dotted Quad Host MZ Response	13
+ET POLICY PE EXE or DLL Windows file download HTTP	13
+ET INFO Suspicious Possible CollectGarbage in base64 1	11
+ET CURRENT_EVENTS SunDown EK RIP Landing M4 B642	11
+ET TROJAN Sharik/Smoke CnC Beacon 8	10
+ET TROJAN Sharik/Smoke CnC Beacon 9	10
+ET POLICY Cryptocurrency Miner Checkin	6
+ET CURRENT_EVENTS RIG EK URI Struct Mar 13 2017 M2	4
+ET POLICY DNS request for Monero mining pool	2
+ET POLICY Outdated Flash Version M1	1
+ET TROJAN Possible Sharik/Smoke Loader Microsoft Connectivity check M3	1
+ET CURRENT_EVENTS RIG EK URI Struct Jun 13 2017	1
+ET INFO Executable Download from dotted-quad Host	1

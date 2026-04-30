@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Incident Investigation Report - CMM528</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   VIEWPORT FITTING: MANDATORY BASE STYLES
+   =========================================== */
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding);
+}
+:root {
+    --title-size: clamp(1.5rem, 5vw, 4rem);
+    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+    --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+    --small-size: clamp(0.65rem, 1vw, 0.875rem);
+    --slide-padding: clamp(1rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 2vw, 2rem);
+    --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box {
+    max-width: min(90vw, 1000px);
+    max-height: min(80vh, 700px);
+}
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+img, .image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+    }
+    .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+    :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+}
+@media (max-width: 600px) {
+    :root { --title-size: clamp(1.25rem, 7vw, 2.5rem); }
+    .grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   THEME: NEON CYBER + BOLD SIGNAL HYBRID
+   =========================================== */
+:root {
+    --bg-deep: #0a0f1c;
+    --bg-panel: #0d1525;
+    --bg-card: #111a2e;
+    --cyan: #00ffcc;
+    --cyan-dim: rgba(0, 255, 204, 0.15);
+    --cyan-glow: rgba(0, 255, 204, 0.25);
+    --magenta: #ff00aa;
+    --red-alert: #ff3344;
+    --orange: #ff6d00;
+    --yellow: #ffd600;
+    --text-primary: #e0e6f0;
+    --text-secondary: #8899bb;
+    --text-dim: #4a5a7a;
+    --border: rgba(0, 255, 204, 0.08);
+    --border-strong: rgba(0, 255, 204, 0.2);
+    --font-display: 'Clash Display', 'Chakra Petch', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'Chakra Petch', monospace;
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-normal: 0.6s;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+}
+
+/* ===========================================
+   GLOBAL SLIDE STYLES
+   =========================================== */
+.slide {
+    background:
+        repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(0,255,204,0.02) 80px, rgba(0,255,204,0.02) 81px),
+        repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,255,204,0.02) 80px, rgba(0,255,204,0.02) 81px),
+        var(--bg-deep);
+    padding: clamp(24px, 4vh, 48px) clamp(30px, 5vw, 80px);
+}
+
+/* Scan line overlay */
+.slide::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,204,0.01) 2px, rgba(0,255,204,0.01) 4px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.slide > * { position: relative; z-index: 2; }
+
+/* ===========================================
+   SLIDE HEADER BAR
+   =========================================== */
+.slide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: clamp(8px, 1.5vh, 16px);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: clamp(12px, 2vh, 24px);
+    flex-shrink: 0;
+}
+
+.slide-num {
+    font-family: var(--font-display);
+    font-size: clamp(0.6rem, 1vw, 0.8rem);
+    font-weight: 600;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+}
+
+.slide-label {
+    font-size: clamp(0.5rem, 0.8vw, 0.65rem);
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+}
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+h2 {
+    font-family: var(--font-display);
+    font-size: var(--h2-size);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: clamp(8px, 1.5vh, 20px);
+    line-height: 1.1;
+}
+
+h2 .accent { color: var(--cyan); }
+
+h3 {
+    font-family: var(--font-display);
+    font-size: var(--h3-size);
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: clamp(4px, 1vh, 12px);
+}
+
+p, li {
+    font-size: var(--body-size);
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+
+strong { color: var(--text-primary); font-weight: 600; }
+
+.highlight { color: var(--cyan); font-weight: 600; }
+.danger { color: var(--red-alert); font-weight: 600; }
+.warn { color: var(--orange); font-weight: 600; }
+
+/* ===========================================
+   BULLET LIST STYLING
+   =========================================== */
+ul.cyber-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.8vh, 10px);
+}
+
+ul.cyber-list li {
+    padding-left: clamp(14px, 1.5vw, 22px);
+    position: relative;
+    font-size: var(--body-size);
+    line-height: 1.45;
+    color: var(--text-secondary);
+}
+
+ul.cyber-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: clamp(6px, 0.7vh, 9px);
+    width: 6px;
+    height: 6px;
+    background: var(--cyan);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* ===========================================
+   DATA CARDS (BOLD SIGNAL INSPIRED)
+   =========================================== */
+.stat-card {
+    background: linear-gradient(135deg, var(--bg-card), rgba(0,255,204,0.05));
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: clamp(12px, 2vh, 24px);
+    text-align: center;
+}
+
+.stat-card .stat-value {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 3.5rem);
+    font-weight: 700;
+    color: var(--cyan);
+    line-height: 1;
+    text-shadow: 0 0 30px var(--cyan-dim);
+}
+
+.stat-card .stat-label {
+    font-size: clamp(0.5rem, 0.8vw, 0.7rem);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-top: 4px;
+    font-family: var(--font-mono);
+}
+
+/* ===========================================
+   TABLE STYLING
+   =========================================== */
+.cyber-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.6rem, 1vw, 0.8rem);
+}
+
+.cyber-table th {
+    text-align: left;
+    padding: clamp(4px, 0.6vh, 8px) clamp(6px, 1vw, 12px);
+    border-bottom: 1px solid var(--border-strong);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: clamp(0.5rem, 0.8vw, 0.65rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.cyber-table td {
+    padding: clamp(3px, 0.5vh, 7px) clamp(6px, 1vw, 12px);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    vertical-align: top;
+}
+
+.cyber-table tr:last-child td { border-bottom: none; }
+
+/* ===========================================
+   PHASE BADGE
+   =========================================== */
+.phase-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: clamp(0.5rem, 0.7vw, 0.6rem);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: clamp(6px, 1vh, 12px);
+}
+
+.phase-badge.phase-ek { background: rgba(255,0,170,0.15); color: var(--magenta); border: 1px solid rgba(255,0,170,0.3); }
+.phase-badge.phase-c2 { background: rgba(255,109,0,0.15); color: var(--orange); border: 1px solid rgba(255,109,0,0.3); }
+.phase-badge.phase-mine { background: rgba(255,51,68,0.15); color: var(--red-alert); border: 1px solid rgba(255,51,68,0.3); }
+.phase-badge.phase-fw { background: rgba(0,255,204,0.1); color: var(--cyan); border: 1px solid rgba(0,255,204,0.2); }
+
+/* ===========================================
+   SEVERITY / CLASSIFICATION BADGES
+   =========================================== */
+.severity-badge {
+    font-family: var(--font-mono);
+    font-size: clamp(0.5rem, 0.7vw, 0.6rem);
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 3px 12px;
+    border-radius: 4px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.severity-high { background: rgba(255,51,68,0.15); color: var(--red-alert); border: 1px solid rgba(255,51,68,0.4); }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ===========================================
+   TIMELINE STYLING
+   =========================================== */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2px, 0.4vh, 6px);
+    flex: 1;
+}
+
+.timeline-entry {
+    display: grid;
+    grid-template-columns: clamp(50px, 8vw, 90px) clamp(70px, 10vw, 110px) 1fr;
+    gap: clamp(6px, 1vw, 14px);
+    align-items: baseline;
+    font-size: clamp(0.6rem, 1vw, 0.8rem);
+    padding: clamp(2px, 0.4vh, 5px) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.timeline-entry:last-child { border-bottom: none; }
+
+.timeline-time {
+    font-family: var(--font-mono);
+    color: var(--cyan);
+    font-weight: 600;
+    font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+}
+
+.timeline-phase {
+    font-family: var(--font-mono);
+    font-size: clamp(0.45rem, 0.7vw, 0.6rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-align: center;
+}
+
+.timeline-phase.delivery { background: rgba(255,0,170,0.15); color: var(--magenta); }
+.timeline-phase.exploit { background: rgba(255,51,68,0.15); color: var(--red-alert); }
+.timeline-phase.install { background: rgba(255,109,0,0.15); color: var(--orange); }
+.timeline-phase.c2 { background: rgba(255,214,0,0.15); color: var(--yellow); }
+.timeline-phase.action { background: rgba(255,51,68,0.2); color: var(--red-alert); }
+
+.timeline-desc { color: var(--text-secondary); }
+
+/* ===========================================
+   STRIDE GRID
+   =========================================== */
+.stride-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(6px, 1vw, 12px);
+    flex: 1;
+}
+
+.stride-card {
+    border-radius: 8px;
+    padding: clamp(8px, 1.2vh, 16px) clamp(10px, 1.2vw, 16px);
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3px, 0.4vh, 6px);
+}
+
+.stride-card .stride-letter {
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.6rem);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stride-card .stride-title {
+    font-family: var(--font-mono);
+    font-size: clamp(0.45rem, 0.7vw, 0.6rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+}
+
+.stride-card .stride-desc {
+    font-size: clamp(0.5rem, 0.8vw, 0.65rem);
+    line-height: 1.35;
+    color: var(--text-secondary);
+}
+
+.stride-s { background: rgba(26,82,118,0.15); border-color: rgba(26,82,118,0.4); }
+.stride-s .stride-letter, .stride-s .stride-title { color: #5dade2; }
+.stride-t { background: rgba(123,36,28,0.15); border-color: rgba(123,36,28,0.4); }
+.stride-t .stride-letter, .stride-t .stride-title { color: #ec7063; }
+.stride-r { background: rgba(108,52,131,0.15); border-color: rgba(108,52,131,0.4); }
+.stride-r .stride-letter, .stride-r .stride-title { color: #bb8fce; }
+.stride-i { background: rgba(183,149,11,0.15); border-color: rgba(183,149,11,0.4); }
+.stride-i .stride-letter, .stride-i .stride-title { color: #f4d03f; }
+.stride-d { background: rgba(211,84,0,0.15); border-color: rgba(211,84,0,0.4); }
+.stride-d .stride-letter, .stride-d .stride-title { color: #eb984e; }
+.stride-e { background: rgba(30,132,73,0.15); border-color: rgba(30,132,73,0.4); }
+.stride-e .stride-letter, .stride-e .stride-title { color: #58d68d; }
+
+/* ===========================================
+   TWO-COLUMN LAYOUT
+   =========================================== */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(16px, 2vw, 32px);
+    flex: 1;
+    align-items: start;
+}
+
+@media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ===========================================
+   RECOMMENDATIONS NUMBERED LIST
+   =========================================== */
+.rec-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3px, 0.5vh, 8px);
+}
+
+.rec-list li {
+    display: flex;
+    gap: clamp(6px, 1vw, 12px);
+    align-items: baseline;
+    font-size: clamp(0.6rem, 1vw, 0.8rem);
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.rec-num {
+    font-family: var(--font-display);
+    font-size: clamp(0.55rem, 0.8vw, 0.7rem);
+    font-weight: 700;
+    color: var(--cyan);
+    min-width: clamp(16px, 2vw, 24px);
+    flex-shrink: 0;
+}
+
+/* ===========================================
+   CORNER ACCENTS
+   =========================================== */
+.corner { position: absolute; width: 24px; height: 24px; z-index: 3; }
+.corner::before, .corner::after { content: ''; position: absolute; background: var(--cyan); opacity: 0.2; }
+.corner-tl { top: clamp(12px, 2vh, 24px); left: clamp(12px, 2vw, 24px); }
+.corner-tl::before { width: 16px; height: 1px; top: 0; left: 0; }
+.corner-tl::after { width: 1px; height: 16px; top: 0; left: 0; }
+.corner-br { bottom: clamp(12px, 2vh, 24px); right: clamp(12px, 2vw, 24px); }
+.corner-br::before { width: 16px; height: 1px; bottom: 0; right: 0; }
+.corner-br::after { width: 1px; height: 16px; bottom: 0; right: 0; }
+
+/* ===========================================
+   SCROLL ANIMATIONS
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+.slide.visible .reveal:nth-child(2) { transition-delay: 0.15s; }
+.slide.visible .reveal:nth-child(3) { transition-delay: 0.25s; }
+.slide.visible .reveal:nth-child(4) { transition-delay: 0.35s; }
+.slide.visible .reveal:nth-child(5) { transition-delay: 0.45s; }
+
+/* ===========================================
+   BACK TO MENU BUTTON
+   =========================================== */
+.back-to-menu {
+    position: fixed;
+    top: clamp(10px, 1.5vw, 18px);
+    left: clamp(10px, 1.5vw, 18px);
+    z-index: 10000;
+    font-family: var(--font-mono);
+    font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+    color: var(--cyan);
+    text-decoration: none;
+    background: rgba(0, 255, 204, 0.08);
+    border: 1px solid rgba(0, 255, 204, 0.3);
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+.back-to-menu:hover {
+    opacity: 1;
+    background: rgba(0, 255, 204, 0.15);
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px rgba(0, 255, 204, 0.2);
+}
+
+/* ===========================================
+   PROGRESS BAR
+   =========================================== */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--cyan), var(--magenta));
+    z-index: 9999;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* ===========================================
+   NAV DOTS
+   =========================================== */
+nav.nav-dots {
+    position: fixed;
+    right: clamp(10px, 1.5vw, 20px);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9998;
+}
+
+nav.nav-dots .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0;
+}
+
+nav.nav-dots .dot.active {
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan-dim);
+    transform: scale(1.3);
+}
+
+/* ===========================================
+   TITLE SLIDE SPECIFIC
+   =========================================== */
+.title-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background:
+        radial-gradient(ellipse at 25% 50%, rgba(0,255,204,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 50%, rgba(255,0,170,0.04) 0%, transparent 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(0,255,204,0.02) 80px, rgba(0,255,204,0.02) 81px),
+        repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,255,204,0.02) 80px, rgba(0,255,204,0.02) 81px),
+        var(--bg-deep);
+}
+
+.title-slide h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5.5vw, 5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: clamp(8px, 1.5vh, 16px);
+}
+
+.title-slide h1 .gradient-text {
+    background: linear-gradient(135deg, var(--cyan), var(--magenta));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.title-slide .subtitle {
+    font-size: clamp(0.8rem, 1.4vw, 1.1rem);
+    color: var(--text-secondary);
+    max-width: 650px;
+    line-height: 1.5;
+}
+
+.title-slide .meta-info {
+    font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    margin-top: clamp(16px, 3vh, 32px);
+}
+
+/* ===========================================
+   INLINE EDITING
+   =========================================== */
+.edit-hotzone {
+    position: fixed;
+    top: 0; left: 0;
+    width: 80px; height: 80px;
+    z-index: 10000;
+    cursor: pointer;
+}
+
+.edit-toggle {
+    position: fixed;
+    top: 12px; left: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    color: var(--cyan);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    font-family: var(--font-body);
+}
+
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+
+.edit-banner {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(90deg, rgba(0,255,204,0.1), rgba(255,0,170,0.1));
+    border-bottom: 1px solid var(--border-strong);
+    padding: 4px 0;
+    text-align: center;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+    z-index: 9997;
+    display: none;
+}
+
+.edit-banner.active { display: block; }
+
+body.edit-active [contenteditable] {
+    outline: 1px dashed rgba(0,255,204,0.3);
+    outline-offset: 2px;
+    cursor: text;
+}
+
+body.edit-active [contenteditable]:focus {
+    outline-color: var(--cyan);
+    background: rgba(0,255,204,0.03);
+}
+
+/* ===========================================
+   CONCLUSION SLIDE
+   =========================================== */
+.conclusion-slide {
+    background:
+        radial-gradient(ellipse at 30% 60%, rgba(255,51,68,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 70% 40%, rgba(0,255,204,0.06) 0%, transparent 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(0,255,204,0.02) 80px, rgba(0,255,204,0.02) 81px),
+        repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,255,204,0.02) 80px, rgba(0,255,204,0.02) 81px),
+        var(--bg-deep);
+}
+</style>
+</head>
+<body>
+
+<!-- Back to Evidence Menu -->
+<a href="../index.html" class="back-to-menu" id="backToMenu" title="Back to Evidence Portfolio">&#8592; Evidence Menu</a>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Nav Dots -->
+<nav class="nav-dots" id="navDots"></nav>
+
+<!-- Inline Edit Controls -->
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle">&#9998; Edit</button>
+<div class="edit-banner" id="editBanner">EDIT MODE  - Click any text to edit &bull; Ctrl+S to save file</div>
+
+<!-- ===================== SLIDE 1: TITLE ===================== -->
+<section class="slide title-slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div style="position:absolute;top:clamp(20px,3vh,40px);left:clamp(30px,4vw,60px);">
+        <span class="severity-badge severity-high">Severity: HIGH</span>
+    </div>
+    <div style="position:absolute;top:clamp(20px,3vh,40px);right:clamp(30px,4vw,60px);font-family:var(--font-mono);font-size:clamp(0.5rem,0.8vw,0.65rem);color:var(--text-dim);letter-spacing:0.15em;">
+        February 20, 2025
+    </div>
+    <p class="reveal" style="font-family:var(--font-mono);font-size:clamp(0.6rem,1vw,0.8rem);letter-spacing:0.4em;text-transform:uppercase;color:var(--cyan);margin-bottom:clamp(8px,1.5vh,16px);">CMM528 Network Security</p>
+    <h1 class="reveal">Security Incident<br><span class="gradient-text">Investigation Report</span></h1>
+    <p class="reveal subtitle">Exploit Kit &rarr; Smoke Loader &rarr; Cryptominer Attack<br><strong style="color:var(--cyan)">98 IDS alerts</strong> across a 12-minute attack chain</p>
+    <p class="reveal meta-info">Robert Gordon University &bull; April 2026</p>
+</section>
+
+<!-- ===================== SLIDE 2: EXECUTIVE SUMMARY ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">02</span>
+        <span class="slide-label">Executive Summary</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Executive</span> Summary</h2>
+    <div class="two-col reveal">
+        <div>
+            <ul class="cyber-list">
+                <li>Employee workstation <strong>(10.1.11.101)</strong> compromised via drive-by download</li>
+                <li>Attack chain: <span class="highlight">SunDown/RIG EK</span> &rarr; <span class="warn">Smoke Loader</span> &rarr; <span class="danger">XMRig Miner</span></li>
+                <li><strong>98 IDS alerts</strong> generated over a 12-minute window (03:36  - 03:49 UTC)</li>
+                <li>Attacker's Monero wallet and mining pool <strong>(pool.minexmr.com)</strong> identified</li>
+            </ul>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1vw,14px);">
+            <div class="stat-card">
+                <div class="stat-value">98</div>
+                <div class="stat-label">IDS Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">87%</div>
+                <div class="stat-label">Priority 1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12m</div>
+                <div class="stat-label">Attack Window</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="color:var(--red-alert)">HIGH</div>
+                <div class="stat-label">Severity</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 3: INCIDENT BACKGROUND ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">03</span>
+        <span class="slide-label">Incident Background</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Incident</span> Background</h2>
+    <ul class="cyber-list reveal">
+        <li>Helpdesk ticket received from employee <strong>Charlie</strong> (Client Outreach department)</li>
+        <li>Reported computer <em>"acting funny"</em> and running slowly after browsing the Internet</li>
+        <li>Network monitored by <span class="highlight">Security Onion</span> IDS platform (Snort, Zeek/Bro, Elasticsearch, Kibana)</li>
+        <li>Victim IP: <strong>10.1.11.101</strong> &bull; DNS/Gateway: <strong>10.1.11.1</strong></li>
+        <li>Victim OS: <strong>Windows 7 SP1 64-bit</strong> with Internet Explorer 11 and <span class="danger">outdated Adobe Flash Player</span></li>
+        <li>Investigation date: <strong>February 20, 2025</strong></li>
+    </ul>
+</section>
+
+<!-- ===================== SLIDE 4: METHODOLOGY ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">04</span>
+        <span class="slide-label">Investigation Methodology</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Investigation</span> Methodology</h2>
+    <div class="two-col reveal">
+        <div>
+            <h3 style="font-size:clamp(0.7rem,1.1vw,0.9rem);">Tools Used</h3>
+            <ul class="cyber-list">
+                <li><strong>Sguil</strong>  - IDS alert management and packet inspection</li>
+                <li><strong>Kibana</strong>  - Log visualisation and data correlation</li>
+                <li><strong>Zeek/Bro</strong>  - Network metadata and file hashing</li>
+                <li><strong>Wireshark</strong>  - Packet capture and file extraction</li>
+                <li><strong>MySQL</strong>  - Direct Sguil database queries</li>
+            </ul>
+        </div>
+        <div>
+            <h3 style="font-size:clamp(0.7rem,1.1vw,0.9rem);">Frameworks Applied</h3>
+            <ul class="cyber-list">
+                <li><strong>NIST SP 800-61</strong>  - Incident Response methodology</li>
+                <li><strong>MITRE ATT&CK</strong>  - Adversary technique identification</li>
+                <li><strong>STRIDE</strong>  - Threat classification model</li>
+                <li><strong>Cyber Kill Chain</strong>  - Attack phase mapping</li>
+            </ul>
+            <div style="margin-top:clamp(8px,1.5vh,16px);padding:clamp(6px,1vh,12px);border-left:2px solid var(--cyan);padding-left:clamp(8px,1vw,14px);">
+                <p style="font-size:clamp(0.55rem,0.9vw,0.7rem);color:var(--text-dim);">Workflow: Alert Triage &rarr; Traffic Analysis &rarr; Payload Decoding &rarr; Threat Intel &rarr; Framework Mapping</p>
+                <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:3px;">All evidence consolidated in <span class="highlight" style="font-size:1em;">Evidence Portfolio (D4)</span> - referenced throughout this presentation</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 5: VICTIM ID ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">05</span>
+        <span class="slide-label">Victim Identification</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Victim</span> Identification</h2>
+    <div class="two-col reveal">
+        <div>
+            <table class="cyber-table">
+                <tr><th>Attribute</th><th>Value</th></tr>
+                <tr><td>IP Address</td><td><strong>10.1.11.101</strong></td></tr>
+                <tr><td>OS</td><td>Windows 7 SP1 64-bit</td></tr>
+                <tr><td>Browser</td><td>Internet Explorer 11 (Trident/7.0)</td></tr>
+                <tr><td>Vulnerable Software</td><td><span class="danger">Adobe Flash Player (outdated)</span></td></tr>
+                <tr><td>DNS / Gateway</td><td>10.1.11.1</td></tr>
+                <tr><td>User</td><td>Charlie, Client Outreach</td></tr>
+            </table>
+        </div>
+        <div>
+            <div class="stat-card" style="margin-bottom:clamp(8px,1vh,14px);">
+                <div style="font-size:clamp(0.55rem,0.8vw,0.7rem);color:var(--text-dim);text-transform:uppercase;letter-spacing:0.2em;font-family:var(--font-mono);margin-bottom:4px;">Symptom Reported</div>
+                <p style="font-size:var(--body-size);color:var(--text-primary);line-height:1.4;"><em>"Computer acting funny and running slowly"</em></p>
+            </div>
+            <div class="stat-card">
+                <div style="font-size:clamp(0.55rem,0.8vw,0.7rem);color:var(--text-dim);text-transform:uppercase;letter-spacing:0.2em;font-family:var(--font-mono);margin-bottom:4px;">Root Cause</div>
+                <p style="font-size:var(--body-size);color:var(--red-alert);line-height:1.4;"><strong>CPU consumed by XMRig cryptocurrency miner</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 6: ATTACK TIMELINE ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">06</span>
+        <span class="slide-label">Attack Timeline &bull; Cyber Kill Chain</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Attack Timeline</span>  - Kill Chain Mapping</h2>
+    <div class="timeline reveal">
+        <div class="timeline-entry">
+            <span class="timeline-time">03:36:39</span>
+            <span class="timeline-phase delivery">Delivery</span>
+            <span class="timeline-desc">Browser redirected to SunDown/RIG EK at <strong>188.227.16.131</strong></span>
+        </div>
+        <div class="timeline-entry">
+            <span class="timeline-time">03:36:40</span>
+            <span class="timeline-phase exploit">Exploitation</span>
+            <span class="timeline-desc">Flash Player exploit fires via <strong>CollectGarbage</strong> technique</span>
+        </div>
+        <div class="timeline-entry">
+            <span class="timeline-time">03:36:43</span>
+            <span class="timeline-phase exploit">Exploitation</span>
+            <span class="timeline-desc">Outdated Flash Version alert  - <strong>CVE-2015-8651</strong> integer overflow</span>
+        </div>
+        <div class="timeline-entry">
+            <span class="timeline-time">03:37:22</span>
+            <span class="timeline-phase install">Installation</span>
+            <span class="timeline-desc">Smoke Loader trojan installed, C2 beaconing to <strong>saumottam.ru</strong></span>
+        </div>
+        <div class="timeline-entry">
+            <span class="timeline-time">03:37:55</span>
+            <span class="timeline-phase c2">C2</span>
+            <span class="timeline-desc">Microsoft connectivity check  - evasion technique</span>
+        </div>
+        <div class="timeline-entry">
+            <span class="timeline-time">03:38:01</span>
+            <span class="timeline-phase install">Installation</span>
+            <span class="timeline-desc"><strong>bprocess.exe</strong> (809 KB) downloaded from bare IP <strong>104.236.16.69</strong></span>
+        </div>
+        <div class="timeline-entry">
+            <span class="timeline-time">03:43:35</span>
+            <span class="timeline-phase action">Actions</span>
+            <span class="timeline-desc">XMRig Monero miner begins mining to <strong>pool.minexmr.com:5555</strong></span>
+        </div>
+        <div class="timeline-entry">
+            <span class="timeline-time">03:48:49</span>
+            <span class="timeline-phase action">Actions</span>
+            <span class="timeline-desc">Last recorded alert  - mining continues</span>
+        </div>
+    </div>
+    <p class="reveal" style="font-size:clamp(0.55rem,0.9vw,0.7rem);color:var(--text-dim);margin-top:clamp(4px,0.8vh,10px);font-family:var(--font-mono);">
+        Total: 12-minute attack chain &bull; 98 alerts &bull; Recon & Weaponisation phases occurred before the observed window
+    </p>
+</section>
+
+<!-- ===================== SLIDE 7: PHASE 1 EXPLOIT KIT ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">07</span>
+        <span class="slide-label">Phase 1 Analysis</span>
+    </div>
+    <div class="reveal"><span class="phase-badge phase-ek">Phase 1  - Exploit Kit</span></div>
+    <h2 class="reveal"><span class="accent">Exploit Kit</span> Delivery</h2>
+    <div class="two-col reveal">
+        <div>
+            <ul class="cyber-list">
+                <li>Victim redirected to <strong>SunDown/RIG EK</strong> at 188.227.16.131 (nginx/1.2.1)</li>
+                <li>Landing page: heavily obfuscated JavaScript with base64 parameters</li>
+                <li><strong>CollectGarbage</strong> technique triggers use-after-free in Flash</li>
+                <li>Vulnerability: <span class="danger">CVE-2015-8651</span>  - Flash integer overflow</li>
+                <li>Three different User-Agents observed  - Flash downloading payloads</li>
+            </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:clamp(8px,1vh,14px);">
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:clamp(1.5rem,3vw,2.5rem);">40</div>
+                <div class="stat-label">Alerts in 6 seconds</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size:clamp(0.55rem,0.8vw,0.7rem);color:var(--text-dim);text-transform:uppercase;letter-spacing:0.15em;font-family:var(--font-mono);margin-bottom:6px;">VirusTotal</div>
+                <div class="stat-value" style="font-size:clamp(1.2rem,2.5vw,2rem);color:var(--red-alert);">34/62</div>
+                <div class="stat-label">Flash Exploit Detections</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 8: PHASE 2 SMOKE LOADER ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">08</span>
+        <span class="slide-label">Phase 2 Analysis</span>
+    </div>
+    <div class="reveal"><span class="phase-badge phase-c2">Phase 2  - Command & Control</span></div>
+    <h2 class="reveal"><span class="accent">Smoke Loader</span> C2 Communication</h2>
+    <div class="two-col reveal">
+        <div>
+            <ul class="cyber-list">
+                <li>Sharik/Smoke Loader C2 to <strong>104.236.160.225</strong> (saumottam.ru)</li>
+                <li>Russian .ru domain  - geo-located to <strong>San Francisco, USA</strong> (DigitalOcean VPS) - attacker likely using rented infrastructure or VPN to mask true origin</li>
+                <li>HTTP POST beacons with <strong>63-byte encrypted payloads</strong></li>
+                <li>Server returns <span class="warn">fake HTTP 404 page</span> (Apache/2.2.15, charset=windows-1251)</li>
+                <li>Connectivity check via www.microsoft.com  - evasion technique</li>
+            </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:clamp(8px,1vh,14px);">
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:clamp(1.5rem,3vw,2.5rem);">20</div>
+                <div class="stat-label">C2 Beacon Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:clamp(1.5rem,3vw,2.5rem);">5</div>
+                <div class="stat-label">Connections in 43 sec</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 9: MALWARE DOWNLOAD ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">09</span>
+        <span class="slide-label">Malware Analysis</span>
+    </div>
+    <div class="reveal"><span class="phase-badge phase-c2">Phase 2b  - Payload Delivery</span></div>
+    <h2 class="reveal"><span class="accent">bprocess.exe</span> Malware Download</h2>
+    <div class="two-col reveal">
+        <div>
+            <ul class="cyber-list">
+                <li>Downloaded from bare IP <strong>104.236.16.69</strong> (no domain  - evasion)</li>
+                <li>File size: <strong>828,929 bytes</strong> (809 KB) via plain HTTP</li>
+                <li>PE analysis: <strong>NSIS installer</strong>, compiled 2014-12-05, x86</li>
+                <li><span class="danger">No ASLR/DEP</span>  - deliberately weak security</li>
+                <li>27 alerts triggered: dotted-quad MZ response + PE download</li>
+            </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:clamp(8px,1vh,14px);">
+            <div class="stat-card">
+                <div style="font-size:clamp(0.55rem,0.8vw,0.7rem);color:var(--text-dim);text-transform:uppercase;letter-spacing:0.15em;font-family:var(--font-mono);margin-bottom:6px;">VirusTotal</div>
+                <div class="stat-value" style="color:var(--red-alert);">60/70</div>
+                <div class="stat-label">Detections</div>
+            </div>
+            <div class="stat-card">
+                <p style="font-size:clamp(0.5rem,0.7vw,0.6rem);font-family:var(--font-mono);color:var(--text-dim);word-break:break-all;line-height:1.4;">
+                    SHA256:<br><span style="color:var(--text-secondary);">f9c67313230bfc45ba8f...c111fcd7c50d11dc80</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 10: CRYPTOMINING ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">10</span>
+        <span class="slide-label">Phase 3 Analysis</span>
+    </div>
+    <div class="reveal"><span class="phase-badge phase-mine">Phase 3  - Actions on Objectives</span></div>
+    <h2 class="reveal"><span class="accent">Cryptocurrency</span> Mining</h2>
+    <div class="two-col reveal">
+        <div>
+            <ul class="cyber-list">
+                <li><strong>XMRig v2.4.2</strong> Monero miner installed</li>
+                <li>Mining pool: <strong>pool.minexmr.com</strong> on non-standard port <span class="danger">5555</span></li>
+                <li>JSON-RPC login captured from packet payloads</li>
+                <li><strong>5 mining pool servers</strong> contacted across France & Germany</li>
+                <li>Miner agent string: <em>"XMRig/2.4.2 (Windows NT 6.1; Win64; x64)"</em></li>
+                <li>Directly explains Charlie's <span class="danger">slow performance</span> symptoms</li>
+            </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:clamp(8px,1vh,14px);">
+            <div class="stat-card">
+                <div class="stat-value" style="font-size:clamp(1.3rem,2.5vw,2rem);">5</div>
+                <div class="stat-label">Pool Servers</div>
+            </div>
+            <div class="stat-card">
+                <p style="font-size:clamp(0.5rem,0.7vw,0.6rem);font-family:var(--font-mono);color:var(--text-dim);word-break:break-all;line-height:1.4;">
+                    Monero Wallet:<br><span style="color:var(--orange);font-size:clamp(0.45rem,0.6vw,0.55rem);">49CYQrmrqP2LyHQdMY26JG...D2VrGrx</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 11: IOCs ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">11</span>
+        <span class="slide-label">Indicators of Compromise</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Indicators</span> of Compromise</h2>
+    <div class="two-col reveal">
+        <div>
+            <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Malicious Infrastructure</h3>
+            <table class="cyber-table">
+                <tr><th>IP / Domain</th><th>Role</th></tr>
+                <tr><td><strong>188.227.16.131</strong></td><td>Exploit Kit server</td></tr>
+                <tr><td><strong>saumottam.ru</strong></td><td>Smoke Loader C2</td></tr>
+                <tr><td><strong>104.236.16.69</strong></td><td>Malware hosting</td></tr>
+                <tr><td><strong>pool.minexmr.com</strong></td><td>Mining pool (5 IPs)</td></tr>
+            </table>
+        </div>
+        <div>
+            <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Malicious Files</h3>
+            <table class="cyber-table">
+                <tr><th>File</th><th>VT Score</th></tr>
+                <tr><td>bprocess.exe (809 KB)</td><td><span class="danger">60/70</span></td></tr>
+                <tr><td>Flash exploit SWF (13.57 KB)</td><td><span class="danger">34/62</span></td></tr>
+            </table>
+            <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:3px;font-family:var(--font-mono);">Files exported via Wireshark, verified on VirusTotal - see Evidence Portfolio</p>
+            <div style="margin-top:clamp(8px,1vh,14px);">
+                <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Vulnerability</h3>
+                <p style="font-size:var(--body-size);"><span class="danger">CVE-2015-8651</span>  - Flash integer overflow</p>
+            </div>
+            <div style="margin-top:clamp(6px,0.8vh,10px);">
+                <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Exported Evidence</h3>
+                <p style="font-size:clamp(0.5rem,0.8vw,0.6rem);color:var(--text-secondary);line-height:1.45;">98 IDS alerts (.tsv) &bull; Packet payload decodes &bull; HTTP file exports &bull; VirusTotal reports &bull; Sguil transcript screenshots</p>
+                <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:2px;font-family:var(--font-mono);">Attacker reach: 4 countries (USA, Russia, France, Germany)</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===================== SLIDE 12: STRIDE ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">12</span>
+        <span class="slide-label">STRIDE Threat Analysis</span>
+    </div>
+    <h2 class="reveal"><span class="accent">STRIDE</span> Threat Analysis</h2>
+    <div class="stride-grid reveal">
+        <div class="stride-card stride-s">
+            <span class="stride-letter">S</span>
+            <span class="stride-title">Spoofing</span>
+            <span class="stride-desc">C2 server returns fake Apache 404 page (Cyrillic charset). Smoke Loader mimics legitimate browsing via bing.com, microsoft.com.</span>
+        </div>
+        <div class="stride-card stride-t">
+            <span class="stride-letter">T</span>
+            <span class="stride-title">Tampering</span>
+            <span class="stride-desc">Flash exploit corrupts ByteArray memory via CVE-2015-8651. bprocess.exe modifies system to install XMRig miner.</span>
+        </div>
+        <div class="stride-card stride-r">
+            <span class="stride-letter">R</span>
+            <span class="stride-title">Repudiation</span>
+            <span class="stride-desc">Encrypted 63-byte C2 payloads. Bare IP for malware download (no domain trail). Monero for untraceable payment.</span>
+        </div>
+        <div class="stride-card stride-i">
+            <span class="stride-letter">I</span>
+            <span class="stride-title">Info Disclosure</span>
+            <span class="stride-desc">XMRig sends OS details to mining pool. Smoke Loader beacons system information to C2 via HTTP POST.</span>
+        </div>
+        <div class="stride-card stride-d">
+            <span class="stride-letter">D</span>
+            <span class="stride-title">Denial of Service</span>
+            <span class="stride-desc">CPU consumed by XMRig = effective DoS on workstation. Directly explains Charlie's slow performance symptoms.</span>
+        </div>
+        <div class="stride-card stride-e">
+            <span class="stride-letter">E</span>
+            <span class="stride-title">Elevation of Privilege</span>
+            <span class="stride-desc">Flash exploit gains arbitrary code execution from browser context. No user interaction required beyond browsing.</span>
+        </div>
+    </div>
+    <p class="reveal" style="font-size:clamp(0.5rem,0.8vw,0.65rem);color:var(--text-dim);margin-top:clamp(4px,0.8vh,10px);text-align:center;font-family:var(--font-mono);">
+        All 6 STRIDE categories impacted  - multi-dimensional compromise requiring comprehensive remediation
+    </p>
+</section>
+
+<!-- ===================== SLIDE 13: MITRE ATT&CK ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">13</span>
+        <span class="slide-label">MITRE ATT&CK Mapping</span>
+    </div>
+    <h2 class="reveal"><span class="accent">MITRE ATT&CK</span> Mapping</h2>
+    <table class="cyber-table reveal">
+        <tr><th>Tactic</th><th>Technique</th><th>ID</th><th>Evidence</th></tr>
+        <tr><td>Initial Access</td><td>Drive-by Compromise</td><td><span class="highlight">T1189</span></td><td>SunDown/RIG EK redirect</td></tr>
+        <tr><td>Execution</td><td>Exploitation for Client Execution</td><td><span class="highlight">T1203</span></td><td>Flash Player exploit (CVE-2015-8651)</td></tr>
+        <tr><td>Command & Control</td><td>Application Layer Protocol: Web</td><td><span class="highlight">T1071.001</span></td><td>HTTP POST to saumottam.ru</td></tr>
+        <tr><td>Command & Control</td><td>Non-Standard Port</td><td><span class="highlight">T1571</span></td><td>Mining on port 5555</td></tr>
+        <tr><td>Defense Evasion</td><td>Obfuscated Files or Information</td><td><span class="highlight">T1027</span></td><td>Base64 EK params, encrypted C2</td></tr>
+        <tr><td>Defense Evasion</td><td>Masquerading</td><td><span class="highlight">T1036</span></td><td>Mimicking legitimate browsing</td></tr>
+        <tr><td>Ingress Tool Transfer</td><td>Ingress Tool Transfer</td><td><span class="highlight">T1105</span></td><td>bprocess.exe from bare IP</td></tr>
+        <tr><td>Discovery</td><td>System Info Discovery</td><td><span class="highlight">T1082</span></td><td>XMRig reports OS details</td></tr>
+        <tr><td>Impact</td><td>Resource Hijacking</td><td><span class="highlight">T1496</span></td><td>XMRig Monero cryptomining</td></tr>
+    </table>
+</section>
+
+<!-- ===================== SLIDE 14: RECOMMENDATIONS ===================== -->
+<section class="slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">14</span>
+        <span class="slide-label">Recommendations</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Recommendations</span></h2>
+    <div class="two-col reveal">
+        <div>
+            <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Immediate Actions</h3>
+            <ol class="rec-list">
+                <li><span class="rec-num">01</span>Isolate workstation 10.1.11.101 from network <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1496]</span></li>
+                <li><span class="rec-num">02</span>Block malicious IPs at perimeter firewall <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1071.001]</span></li>
+                <li><span class="rec-num">03</span>Block saumottam.ru & pool.minexmr.com at DNS <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1071.001]</span></li>
+                <li><span class="rec-num">04</span>Reset all credentials for user Charlie <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1078]</span></li>
+                <li><span class="rec-num">05</span>Scan all workstations for XMRig & Smoke Loader <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1105]</span></li>
+            </ol>
+            <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);margin-top:clamp(8px,1.2vh,14px);">Short-term</h3>
+            <ol class="rec-list">
+                <li><span class="rec-num">06</span>Upgrade from Windows 7 (EOL Jan 2020) <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1203]</span></li>
+                <li><span class="rec-num">07</span>Remove Adobe Flash Player (EOL Dec 2020) <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1189]</span></li>
+                <li><span class="rec-num">08</span>Deploy web proxy with content filtering <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1189]</span></li>
+            </ol>
+        </div>
+        <div>
+            <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Long-term Strategic</h3>
+            <ol class="rec-list">
+                <li><span class="rec-num">09</span>Implement application whitelisting <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1204]</span></li>
+                <li><span class="rec-num">10</span>Block non-standard outbound ports <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1571]</span></li>
+                <li><span class="rec-num">11</span>Deploy EDR on all workstations <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1027]</span></li>
+                <li><span class="rec-num">12</span>Implement network segmentation <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1071.001]</span></li>
+                <li><span class="rec-num">13</span>Establish patch management programme <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1203]</span></li>
+                <li><span class="rec-num">14</span>Regular security awareness training <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1189]</span></li>
+                <li><span class="rec-num">15</span>Deploy DNS filtering service <span class="highlight" style="font-size:0.75em;opacity:0.7;">[T1071.001]</span></li>
+            </ol>
+        </div>
+    </div>
+    <p class="reveal" style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:clamp(2px,0.4vh,6px);font-family:var(--font-mono);text-align:center;">
+        Each recommendation mapped to MITRE ATT&CK technique observed in this incident &bull; See Evidence Portfolio (D4) for detailed remediation plan
+    </p>
+</section>
+
+<!-- ===================== SLIDE 15: CONCLUSION ===================== -->
+<section class="slide conclusion-slide">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-br"></div>
+    <div class="slide-header reveal">
+        <span class="slide-num">15</span>
+        <span class="slide-label">Conclusion</span>
+    </div>
+    <h2 class="reveal"><span class="accent">Conclusion</span></h2>
+    <ul class="cyber-list reveal">
+        <li>This attack demonstrates a <strong>fully automated exploitation chain</strong>  - no user interaction required beyond browsing</li>
+        <li>The <span class="danger">outdated Flash Player</span> was the single point of failure that enabled the entire attack</li>
+        <li>All three phases were <span class="highlight">detected by the IDS</span>  - but detection without response allows the attack to succeed</li>
+        <li>The <strong>12-minute window</strong> from exploitation to active mining shows the speed of modern automated attacks</li>
+        <li><strong>Defence in depth</strong> is essential: patching, monitoring, endpoint protection, and user awareness must work together</li>
+    </ul>
+    <div class="reveal" style="margin-top:clamp(12px,2vh,24px);padding:clamp(10px,1.5vh,20px);border:1px solid var(--border-strong);border-radius:8px;background:rgba(0,255,204,0.03);text-align:center;">
+        <p style="font-size:var(--body-size);color:var(--cyan);font-weight:600;">Key Lesson: Keeping software up to date is the most cost-effective security control available.</p>
+        <p style="font-size:clamp(0.55rem,0.8vw,0.65rem);color:var(--text-dim);margin-top:6px;">The attacker's Monero wallet provides a potential attribution lead for law enforcement.</p>
+        <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:4px;font-family:var(--font-mono);">Full evidence: Evidence Portfolio (D4) &bull; Exported IOCs &bull; VirusTotal reports &bull; IDS alert data</p>
+    </div>
+</section>
+
+<!-- ===========================================
+     JAVASCRIPT: SLIDE CONTROLLER
+     =========================================== -->
+<script>
+class SlidePresentation {
+    constructor() {
+        this.slides = document.querySelectorAll('.slide');
+        this.currentSlide = 0;
+        this.isScrolling = false;
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupProgressBar();
+        this.setupNavDots();
+    }
+
+    setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const idx = Array.from(this.slides).indexOf(entry.target);
+                    if (idx !== -1) {
+                        this.currentSlide = idx;
+                        this.updateProgressBar();
+                        this.updateNavDots();
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+        this.slides.forEach(slide => observer.observe(slide));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            if (e.target.getAttribute && e.target.getAttribute('contenteditable')) return;
+            switch(e.key) {
+                case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+                    e.preventDefault();
+                    this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+                    break;
+                case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+                    e.preventDefault();
+                    this.goToSlide(Math.max(this.currentSlide - 1, 0));
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    this.goToSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    this.goToSlide(this.slides.length - 1);
+                    break;
+            }
+        });
+    }
+
+    setupTouchNav() {
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            const diff = startY - e.changedTouches[0].clientY;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+                else this.goToSlide(Math.max(this.currentSlide - 1, 0));
+            }
+        }, { passive: true });
+    }
+
+    setupWheelNav() {
+        let lastWheel = 0;
+        document.addEventListener('wheel', (e) => {
+            const now = Date.now();
+            if (now - lastWheel < 800) return;
+            lastWheel = now;
+            if (e.deltaY > 30) this.goToSlide(Math.min(this.currentSlide + 1, this.slides.length - 1));
+            else if (e.deltaY < -30) this.goToSlide(Math.max(this.currentSlide - 1, 0));
+        }, { passive: true });
+    }
+
+    setupProgressBar() {
+        this.progressBar = document.getElementById('progressBar');
+        this.updateProgressBar();
+    }
+
+    updateProgressBar() {
+        if (this.progressBar) {
+            const pct = ((this.currentSlide + 1) / this.slides.length) * 100;
+            this.progressBar.style.width = pct + '%';
+        }
+    }
+
+    setupNavDots() {
+        const nav = document.getElementById('navDots');
+        if (!nav) return;
+        nav.innerHTML = '';
+        this.slides.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+            dot.addEventListener('click', () => this.goToSlide(i));
+            nav.appendChild(dot);
+        });
+        this.dots = nav.querySelectorAll('.dot');
+    }
+
+    updateNavDots() {
+        if (!this.dots) return;
+        this.dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === this.currentSlide);
+        });
+    }
+
+    goToSlide(index) {
+        this.slides[index].scrollIntoView({ behavior: 'smooth' });
+        this.currentSlide = index;
+        this.updateProgressBar();
+        this.updateNavDots();
+    }
+}
+
+/* ===========================================
+   INLINE EDITOR
+   =========================================== */
+class InlineEditor {
+    constructor() {
+        this.isActive = false;
+        this.toggle = document.getElementById('editToggle');
+        this.banner = document.getElementById('editBanner');
+        this.hotzone = document.getElementById('editHotzone');
+        this.setupHotzone();
+        this.setupKeyboard();
+        this.loadSavedEdits();
+    }
+
+    setupHotzone() {
+        let hideTimeout = null;
+        this.hotzone.addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+            this.toggle.classList.add('show');
+        });
+        this.hotzone.addEventListener('mouseleave', () => {
+            hideTimeout = setTimeout(() => {
+                if (!this.isActive) this.toggle.classList.remove('show');
+            }, 400);
+        });
+        this.toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+        this.toggle.addEventListener('mouseleave', () => {
+            hideTimeout = setTimeout(() => {
+                if (!this.isActive) this.toggle.classList.remove('show');
+            }, 400);
+        });
+        this.toggle.addEventListener('click', () => this.toggleEditMode());
+        this.hotzone.addEventListener('click', () => this.toggleEditMode());
+    }
+
+    setupKeyboard() {
+        document.addEventListener('keydown', (e) => {
+            if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable') && !e.ctrlKey && !e.metaKey) {
+                this.toggleEditMode();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (this.isActive) this.exportFile();
+            }
+        });
+    }
+
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('edit-active', this.isActive);
+        this.toggle.classList.toggle('active', this.isActive);
+        this.banner.classList.toggle('active', this.isActive);
+        this.toggle.innerHTML = this.isActive ? '&#10003; Done' : '&#9998; Edit';
+
+        const editables = document.querySelectorAll('h1, h2, h3, p, li, span, td, em, strong');
+        editables.forEach(el => {
+            if (this.isActive) {
+                el.setAttribute('contenteditable', 'true');
+                el.addEventListener('input', () => this.saveEdits());
+            } else {
+                el.removeAttribute('contenteditable');
+            }
+        });
+    }
+
+    saveEdits() {
+        try {
+            const data = {};
+            document.querySelectorAll('[contenteditable]').forEach((el, i) => {
+                data[i] = el.innerHTML;
+            });
+            localStorage.setItem('cmm528-presentation-edits', JSON.stringify(data));
+        } catch(e) {}
+    }
+
+    loadSavedEdits() {
+        try {
+            const saved = localStorage.getItem('cmm528-presentation-edits');
+            if (!saved) return;
+            /* Edits are restored when edit mode is toggled - for clean initial load we skip auto-restore */
+        } catch(e) {}
+    }
+
+    exportFile() {
+        const editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+        editableEls.forEach(el => el.removeAttribute('contenteditable'));
+        document.body.classList.remove('edit-active');
+        this.toggle.classList.remove('active', 'show');
+        this.banner.classList.remove('active', 'show');
+
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+        document.body.classList.add('edit-active');
+        editableEls.forEach(el => el.setAttribute('contenteditable', 'true'));
+        this.toggle.classList.add('active');
+        this.banner.classList.add('active');
+
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'cmm528-presentation.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+}
+
+/* Initialize */
+const presentation = new SlidePresentation();
+const editor = new InlineEditor();
+</script>
+</body>
+</html>

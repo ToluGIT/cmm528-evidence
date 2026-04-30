@@ -1,0 +1,26 @@
+! R3 Running Config Changes - Lab 7 Layer 2 Security (16 Mar 2026)
+! Key additions: DHCP Server, Sub-interfaces for VLANs, Inter-VLAN Routing
+
+! === DHCP Server Configuration ===
+ip dhcp excluded-address 192.168.3.136 192.168.3.139
+ip dhcp excluded-address 192.168.20.136
+
+ip dhcp pool CCNAS
+ network 192.168.3.128 255.255.255.128
+ default-router 192.168.3.136
+
+ip dhcp pool 20Users
+ network 192.168.20.128 255.255.255.128
+ default-router 192.168.20.136
+
+! === Sub-interfaces for Inter-VLAN Routing (Router-on-a-Stick) ===
+interface FastEthernet0/1.1
+ encapsulation dot1Q 1 native
+
+interface FastEthernet0/1.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.136 255.255.255.128
+
+interface FastEthernet0/1.99
+ encapsulation dot1Q 99
+ ip address 192.168.99.136 255.255.255.128

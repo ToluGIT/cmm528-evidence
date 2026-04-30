@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation Tests - CMM528 Evidence</title>
+  <style>
+    :root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--acc:#58a6ff;--pass:#3fb950}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}.back{display:inline-block;color:var(--acc);text-decoration:none;margin-bottom:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px}
+    table{width:100%;border-collapse:collapse;font-size:14px} th,td{border:1px solid var(--border);padding:10px;vertical-align:top} th{background:#1f2630;text-align:left}
+    code{background:#0b1220;border:1px solid var(--border);padding:1px 6px;border-radius:4px} .status{color:var(--pass);font-weight:700}
+    p{color:var(--dim)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../index.html#recommendations">&larr; Back to Evidence Index</a>
+    <h1>Control Validation Test Cases</h1>
+    <p>Verification matrix showing how each recommendation is tested and evidenced.</p>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>Test Objective</th><th>Validation Method</th><th>Expected Result</th><th>Evidence Link</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Confirm exploit-kit activity no longer reaches victim segment</td>
+            <td>Review new IDS events + firewall deny logs for known IOC IPs</td>
+            <td>No successful sessions to <code>188.227.16.131</code> or known C2 nodes</td>
+            <td><code>01_investigation/sguil/02_exploit_kit_alert_detail.png</code></td>
+            <td class="status">Template Ready</td>
+          </tr>
+          <tr>
+            <td>Confirm mining traffic is blocked</td>
+            <td>Connection query for <code>pool.minexmr.com:5555</code> after rule deployment</td>
+            <td>Zero active outbound sessions to mining pool infra</td>
+            <td><code>01_investigation/kibana/09f_mining_connection_detail_3.png</code></td>
+            <td class="status">Template Ready</td>
+          </tr>
+          <tr>
+            <td>Confirm malicious binaries cannot execute on endpoint baseline</td>
+            <td>EDR policy simulation + application control policy test</td>
+            <td>Unsigned/known-malicious dropper blocked and alerted</td>
+            <td><code>01_investigation/virustotal/02_bprocess_exe_60_of_70.png</code></td>
+            <td class="status">Template Ready</td>
+          </tr>
+          <tr>
+            <td>Confirm Flash and Windows 7 eradication</td>
+            <td>Endpoint inventory report and exception list review</td>
+            <td><code>0</code> endpoints with Flash or Windows 7</td>
+            <td><code>01_investigation/sguil/03_flash_outdated_alert.png</code></td>
+            <td class="status">Template Ready</td>
+          </tr>
+          <tr>
+            <td>Confirm DNS controls prevent reinfection callbacks</td>
+            <td>DNS sinkhole/blocklist audit and query failure checks</td>
+            <td>Queries to attacker domains return block action</td>
+            <td><code>01_investigation/kibana/05g_dns_query_mining_detail.png</code></td>
+            <td class="status">Template Ready</td>
+          </tr>
+          <tr>
+            <td>Confirm post-incident monitoring coverage</td>
+            <td>Review SIEM dashboard for recurrence indicators weekly</td>
+            <td>No recurring pattern matching prior kill chain</td>
+            <td><code>01_investigation/kibana/01_timeline_alert_spike.png</code></td>
+            <td class="status">Template Ready</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

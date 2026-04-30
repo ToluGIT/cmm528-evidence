@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Change Records and Approvals - CMM528 Evidence</title>
+  <style>
+    :root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--acc:#58a6ff}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}.back{display:inline-block;color:var(--acc);text-decoration:none;margin-bottom:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px}
+    table{width:100%;border-collapse:collapse;font-size:14px} th,td{border:1px solid var(--border);padding:10px;vertical-align:top} th{background:#1f2630;text-align:left}
+    code{background:#0b1220;border:1px solid var(--border);padding:1px 6px;border-radius:4px} p{color:var(--dim)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../index.html#recommendations">&larr; Back to Evidence Index</a>
+    <h1>Change Records and Approvals</h1>
+    <p>Governance trail for remediation controls. Text-first by design; screenshots intentionally excluded in this section.</p>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr><th>Change ID</th><th>Change Description</th><th>Requested By</th><th>Approved By</th><th>Planned Window</th><th>Rollback Plan</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>CHG-2026-041</code></td>
+            <td>Emergency firewall blocks for known exploit/C2/mining IOC endpoints</td>
+            <td>SOC Lead</td>
+            <td>Head of Infrastructure</td>
+            <td>2026-04-27 09:00-10:00</td>
+            <td>Revert ACL objects and restore previous policy snapshot</td>
+          </tr>
+          <tr>
+            <td><code>CHG-2026-042</code></td>
+            <td>DNS policy update for malicious domains and sinkhole rules</td>
+            <td>Network Security Engineer</td>
+            <td>IT Operations Manager</td>
+            <td>2026-04-27 10:30-11:00</td>
+            <td>Rollback DNS policy package version <code>v2026.04.26</code></td>
+          </tr>
+          <tr>
+            <td><code>CHG-2026-043</code></td>
+            <td>Credential reset campaign for impacted accounts and token revocation</td>
+            <td>IAM Admin</td>
+            <td>CISO Delegate</td>
+            <td>2026-04-27 11:00-13:00</td>
+            <td>Restore emergency break-glass credentials if lockout issue occurs</td>
+          </tr>
+          <tr>
+            <td><code>CHG-2026-044</code></td>
+            <td>Endpoint hardening policy: Flash uninstall and Windows 7 retirement</td>
+            <td>Endpoint Engineering</td>
+            <td>IT Change Advisory Board</td>
+            <td>2026-04-28 to 2026-05-15</td>
+            <td>Temporary exception group with manual compensating controls</td>
+          </tr>
+          <tr>
+            <td><code>CHG-2026-045</code></td>
+            <td>EDR analytic tuning for loader/miner TTP coverage</td>
+            <td>SOC Engineering</td>
+            <td>SOC Manager</td>
+            <td>2026-05-01 to 2026-05-31</td>
+            <td>Revert detection profile to prior release and rerun QA set</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+! S2 Running Config - Lab 7 Layer 2 Security (16 Mar 2026)
+! Cisco WS-C3750-48P Switch
+
+hostname S2
+enable secret 5 $1$KPJt$efdgRJUp.TdRFQKrWoShU/
+username admin01 password 0 cisco12345
+
+! === SSH Configuration ===
+no ip domain-lookup
+ip domain-name networksecurity.com
+ip ssh time-out 90
+ip ssh authentication-retries 2
+ip ssh version 2
+
+! === STP Security ===
+spanning-tree mode pvst
+spanning-tree loopguard default
+spanning-tree extend system-id
+
+! === Trunk Port (Fa1/0/1) ===
+interface FastEthernet1/0/1
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 99
+ switchport mode trunk
+ switchport nonegotiate
+
+! === Access Port with Port Security (Fa1/0/18) ===
+interface FastEthernet1/0/18
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security
+ switchport port-security aging time 120
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+! === Root Guard on Uplink ===
+interface GigabitEthernet1/0/1
+ shutdown
+ spanning-tree guard root
+
+! === Management VLAN ===
+interface Vlan1
+ ip address 192.168.3.138 255.255.255.128
+
+! === Unused Ports Shutdown ===
+! Extensive shutdown of unused ports
+
+! === Line Security ===
+line con 0
+ exec-timeout 5 0
+ password ciscoconpass
+ logging synchronous
+ login
+line vty 0 4
+ exec-timeout 5 0
+ privilege level 15
+ login local
+ transport input ssh

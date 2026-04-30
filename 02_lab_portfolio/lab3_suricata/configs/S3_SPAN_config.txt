@@ -1,0 +1,8 @@
+! S3 SPAN Port Configuration - Lab 3 Suricata IDS
+! Mirrors traffic from FastEthernet1/0/5 to FastEthernet1/0/24 (Ubuntu VM)
+!
+monitor session 1 source interface FastEthernet1/0/5 both
+monitor session 1 destination interface FastEthernet1/0/24
+!
+! Verification:
+! show monitor session 1

@@ -1,0 +1,65 @@
+! S3 Running Config - Lab 7 Layer 2 Security (16 Mar 2026)
+! Cisco WS-C3750-48P Switch
+
+hostname S3
+enable secret 5 $1$U8gs$p7LBfOsh6E3hDpvtq/3ke1
+username admin01 password 0 cisco12345
+
+! === SSH Configuration ===
+no ip domain-lookup
+ip domain-name networksecurity.com
+ip ssh time-out 90
+ip ssh authentication-retries 2
+ip ssh version 2
+
+! === DHCP Snooping ===
+ip dhcp snooping vlan 1,20
+ip dhcp snooping
+
+! === STP Security ===
+spanning-tree mode pvst
+spanning-tree extend system-id
+spanning-tree vlan 1 priority 0
+
+! === Trunk Port (Fa1/0/1 to R3) ===
+interface FastEthernet1/0/1
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 99
+ switchport mode trunk
+ switchport nonegotiate
+
+! === Trusted DHCP Port (Fa1/0/5 to R3 DHCP server) ===
+interface FastEthernet1/0/5
+ description connects to DHCP server
+ switchport trunk encapsulation dot1q
+ switchport trunk native vlan 99
+ switchport mode trunk
+ ip dhcp snooping trust
+
+! === Access Port with Security (Fa1/0/18) ===
+interface FastEthernet1/0/18
+ switchport access vlan 20
+ switchport mode access
+ shutdown
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ ip dhcp snooping limit rate 10
+
+! === Management VLAN ===
+interface Vlan1
+ ip address 192.168.3.137 255.255.255.128
+
+! === Unused Ports Shutdown ===
+! Fa1/0/2-4, Fa1/0/8-17, Fa1/0/19-23 all shutdown
+
+! === Line Security ===
+line con 0
+ exec-timeout 5 0
+ password ciscoconpass
+ logging synchronous
+ login
+line vty 0 4
+ exec-timeout 5 0
+ privilege level 15
+ login local
+ transport input ssh

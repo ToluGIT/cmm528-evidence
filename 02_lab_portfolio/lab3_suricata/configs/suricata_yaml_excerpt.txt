@@ -1,0 +1,35 @@
+# Suricata Configuration Excerpt - /etc/suricata/suricata.yaml
+# Lab 3: IDS Monitoring on INSIDE network segment
+
+# Network variables
+vars:
+  address-groups:
+    HOME_NET: "[192.168.3.128/25]"
+    EXTERNAL_NET: "!$HOME_NET"
+
+# Interface to monitor (NIC 2 connected to SPAN port)
+af-packet:
+  - interface: ens37
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+
+# Rule files
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - suricata.rules
+  - local.rules
+
+# Logging outputs
+outputs:
+  - eve-log:
+      enabled: yes
+      filename: eve.json
+      types:
+        - alert
+        - http
+        - dns
+        - tls
+  - fast:
+      enabled: yes
+      filename: fast.log

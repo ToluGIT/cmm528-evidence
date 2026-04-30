@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implementation Plan - CMM528 Evidence</title>
+  <style>
+    :root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--acc:#58a6ff;--good:#3fb950;--warn:#d29922;--bad:#f85149}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.5}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px}
+    .back{display:inline-block;color:var(--acc);text-decoration:none;margin-bottom:16px}
+    h1{margin:0 0 4px 0} p{color:var(--dim)}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{border:1px solid var(--border);padding:10px;vertical-align:top}
+    th{background:#1f2630;text-align:left}
+    .p1{color:var(--bad);font-weight:700}.p2{color:var(--warn);font-weight:700}.p3{color:var(--good);font-weight:700}
+    code{background:#0b1220;border:1px solid var(--border);padding:1px 6px;border-radius:4px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="../index.html#recommendations">&larr; Back to Evidence Index</a>
+    <h1>Recommendations Implementation Plan</h1>
+    <p>Operational plan behind Slide 14. This is the execution detail used to demonstrate expert-level remediation governance.</p>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Control</th><th>Priority</th><th>Owner</th><th>Timeline</th><th>KPI / Success Metric</th><th>Evidence Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Isolate host <code>10.1.11.101</code> and preserve forensic state</td>
+            <td class="p1">P1</td><td>SOC Lead + Desktop Ops</td><td>0-4 hours</td>
+            <td>Host isolated in NAC/EDR; no active outbound sessions from host</td>
+            <td><code>01_investigation/sguil/08_cryptominer_alerts_wallet_proof.png</code></td>
+          </tr>
+          <tr>
+            <td>Block malicious infra (IPs/domains/pool)</td>
+            <td class="p1">P1</td><td>Network Security Engineer</td><td>Same day</td>
+            <td>100% block hit for known IOC set; no repeat traffic to pool/C2</td>
+            <td><code>01_investigation/kibana/09d_mining_connection_detail.png</code></td>
+          </tr>
+          <tr>
+            <td>Credential reset for impacted user + privileged review</td>
+            <td class="p1">P1</td><td>IAM Admin</td><td>24 hours</td>
+            <td>Password reset complete; no suspicious post-reset auth</td>
+            <td><code>01_investigation/exports/01_all_98_alerts.tsv</code></td>
+          </tr>
+          <tr>
+            <td>Remove Adobe Flash and decommission Windows 7 endpoints</td>
+            <td class="p2">P2</td><td>Endpoint Engineering</td><td>7-30 days</td>
+            <td>0 enterprise endpoints running Flash/Win7</td>
+            <td><code>01_investigation/sguil/03_flash_outdated_alert.png</code></td>
+          </tr>
+          <tr>
+            <td>Deploy EDR policy tuning for loader/miner behavior</td>
+            <td class="p2">P2</td><td>SOC Engineering</td><td>30 days</td>
+            <td>&gt;95% endpoint EDR coverage; tested alerts for miner TTPs</td>
+            <td><code>01_investigation/kibana/12_smoke_c2_alert_summary.png</code></td>
+          </tr>
+          <tr>
+            <td>Restrict non-standard outbound ports and harden egress DNS policy</td>
+            <td class="p2">P2</td><td>Network Team</td><td>30 days</td>
+            <td>Outbound TCP/5555 blocked by policy; DNS blocklist enforced</td>
+            <td><code>01_investigation/sguil/09_mining_pool_dns_query.png</code></td>
+          </tr>
+          <tr>
+            <td>Patch governance and monthly security control validation</td>
+            <td class="p3">P3</td><td>IT Ops Manager</td><td>60-90 days</td>
+            <td>Monthly patch SLA met; quarterly control assurance report</td>
+            <td><code>03_analysis/FEB2025_INCIDENT_ANALYSIS.md</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
