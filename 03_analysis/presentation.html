@@ -434,8 +434,8 @@ ul.cyber-list li::before {
 }
 
 .stride-card .stride-desc {
-    font-size: clamp(0.5rem, 0.8vw, 0.65rem);
-    line-height: 1.35;
+    font-size: clamp(0.75rem, 1.05vw, 0.9rem);
+    line-height: 1.4;
     color: var(--text-secondary);
 }
 
@@ -629,7 +629,7 @@ nav.nav-dots .dot.active {
 }
 
 .title-slide .meta-info {
-    font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+    font-size: clamp(0.85rem, 1.3vw, 1.05rem);
     color: var(--text-dim);
     letter-spacing: 0.15em;
     margin-top: clamp(16px, 3vh, 32px);
@@ -826,8 +826,8 @@ body.edit-active [contenteditable]:focus {
                 <li><strong>Cyber Kill Chain</strong>  - Attack phase mapping</li>
             </ul>
             <div style="margin-top:clamp(8px,1.5vh,16px);padding:clamp(6px,1vh,12px);border-left:2px solid var(--cyan);padding-left:clamp(8px,1vw,14px);">
-                <p style="font-size:clamp(0.55rem,0.9vw,0.7rem);color:var(--text-dim);">Workflow: Alert Triage &rarr; Traffic Analysis &rarr; Payload Decoding &rarr; Threat Intel &rarr; Framework Mapping</p>
-                <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:3px;">All evidence consolidated in <span class="highlight" style="font-size:1em;">Evidence Portfolio (D4)</span> - referenced throughout this presentation</p>
+                <p style="font-size:clamp(0.8rem,1.2vw,1rem);color:var(--text-dim);">Workflow: Alert Triage &rarr; Traffic Analysis &rarr; Payload Decoding &rarr; Threat Intel &rarr; Framework Mapping</p>
+                <p style="font-size:clamp(0.7rem,1vw,0.85rem);color:var(--text-dim);margin-top:5px;">All evidence consolidated in <span class="highlight" style="font-size:1em;">Evidence Portfolio (D4)</span> - referenced throughout this presentation</p>
             </div>
         </div>
     </div>
@@ -918,7 +918,7 @@ body.edit-active [contenteditable]:focus {
             <span class="timeline-desc">Last recorded alert  - mining continues</span>
         </div>
     </div>
-    <p class="reveal" style="font-size:clamp(0.55rem,0.9vw,0.7rem);color:var(--text-dim);margin-top:clamp(4px,0.8vh,10px);font-family:var(--font-mono);">
+    <p class="reveal" style="font-size:clamp(0.8rem,1.2vw,1rem);color:var(--text-dim);margin-top:clamp(4px,0.8vh,10px);font-family:var(--font-mono);">
         Total: 12-minute attack chain &bull; 98 alerts &bull; Recon & Weaponisation phases occurred before the observed window
     </p>
 </section>
@@ -1017,7 +1017,7 @@ body.edit-active [contenteditable]:focus {
                 <div class="stat-label">Detections</div>
             </div>
             <div class="stat-card">
-                <p style="font-size:clamp(0.5rem,0.7vw,0.6rem);font-family:var(--font-mono);color:var(--text-dim);word-break:break-all;line-height:1.4;">
+                <p style="font-size:clamp(0.75rem,1vw,0.9rem);font-family:var(--font-mono);color:var(--text-dim);word-break:break-all;line-height:1.4;">
                     SHA256:<br><span style="color:var(--text-secondary);">f9c67313230bfc45ba8f...c111fcd7c50d11dc80</span>
                 </p>
             </div>
@@ -1052,8 +1052,8 @@ body.edit-active [contenteditable]:focus {
                 <div class="stat-label">Pool Servers</div>
             </div>
             <div class="stat-card">
-                <p style="font-size:clamp(0.5rem,0.7vw,0.6rem);font-family:var(--font-mono);color:var(--text-dim);word-break:break-all;line-height:1.4;">
-                    Monero Wallet:<br><span style="color:var(--orange);font-size:clamp(0.45rem,0.6vw,0.55rem);">49CYQrmrqP2LyHQdMY26JG...D2VrGrx</span>
+                <p style="font-size:clamp(0.75rem,1vw,0.9rem);font-family:var(--font-mono);color:var(--text-dim);word-break:break-all;line-height:1.4;">
+                    Monero Wallet:<br><span style="color:var(--orange);font-size:clamp(0.7rem,0.95vw,0.85rem);">49CYQrmrqP2LyHQdMY26JG...D2VrGrx</span>
                 </p>
             </div>
         </div>
@@ -1087,15 +1087,15 @@ body.edit-active [contenteditable]:focus {
                 <tr><td>bprocess.exe (809 KB)</td><td><span class="danger">60/70</span></td></tr>
                 <tr><td>Flash exploit SWF (13.57 KB)</td><td><span class="danger">34/62</span></td></tr>
             </table>
-            <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:3px;font-family:var(--font-mono);">Files exported via Wireshark, verified on VirusTotal - see Evidence Portfolio</p>
+            <p style="font-size:clamp(0.75rem,1.1vw,0.95rem);color:var(--text-dim);margin-top:5px;font-family:var(--font-mono);">Files exported via Wireshark, verified on VirusTotal - see Evidence Portfolio</p>
             <div style="margin-top:clamp(8px,1vh,14px);">
                 <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Vulnerability</h3>
                 <p style="font-size:var(--body-size);"><span class="danger">CVE-2015-8651</span>  - Flash integer overflow</p>
             </div>
             <div style="margin-top:clamp(6px,0.8vh,10px);">
                 <h3 style="font-size:clamp(0.65rem,1vw,0.8rem);">Exported Evidence</h3>
-                <p style="font-size:clamp(0.5rem,0.8vw,0.6rem);color:var(--text-secondary);line-height:1.45;">98 IDS alerts (.tsv) &bull; Packet payload decodes &bull; HTTP file exports &bull; VirusTotal reports &bull; Sguil transcript screenshots</p>
-                <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:2px;font-family:var(--font-mono);">Attacker reach: 4 countries (USA, Russia, France, Germany)</p>
+                <p style="font-size:clamp(0.75rem,1.05vw,0.9rem);color:var(--text-secondary);line-height:1.45;">98 IDS alerts (.tsv) &bull; Packet payload decodes &bull; HTTP file exports &bull; VirusTotal reports &bull; Sguil transcript screenshots</p>
+                <p style="font-size:clamp(0.75rem,1.1vw,0.95rem);color:var(--text-dim);margin-top:4px;font-family:var(--font-mono);">Attacker reach: 4 countries (USA, Russia, France, Germany)</p>
             </div>
         </div>
     </div>
@@ -1142,7 +1142,7 @@ body.edit-active [contenteditable]:focus {
             <span class="stride-desc">Flash exploit gains arbitrary code execution from browser context. No user interaction required beyond browsing.</span>
         </div>
     </div>
-    <p class="reveal" style="font-size:clamp(0.5rem,0.8vw,0.65rem);color:var(--text-dim);margin-top:clamp(4px,0.8vh,10px);text-align:center;font-family:var(--font-mono);">
+    <p class="reveal" style="font-size:clamp(0.8rem,1.2vw,1rem);color:var(--text-dim);margin-top:clamp(4px,0.8vh,10px);text-align:center;font-family:var(--font-mono);">
         All 6 STRIDE categories impacted  - multi-dimensional compromise requiring comprehensive remediation
     </p>
 </section>
@@ -1209,7 +1209,7 @@ body.edit-active [contenteditable]:focus {
             </ol>
         </div>
     </div>
-    <p class="reveal" style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:clamp(2px,0.4vh,6px);font-family:var(--font-mono);text-align:center;">
+    <p class="reveal" style="font-size:clamp(0.75rem,1.1vw,0.9rem);color:var(--text-dim);margin-top:clamp(4px,0.6vh,8px);font-family:var(--font-mono);text-align:center;">
         Each recommendation mapped to MITRE ATT&CK technique observed in this incident &bull; See Evidence Portfolio (D4) for detailed remediation plan
     </p>
 </section>
@@ -1232,8 +1232,8 @@ body.edit-active [contenteditable]:focus {
     </ul>
     <div class="reveal" style="margin-top:clamp(12px,2vh,24px);padding:clamp(10px,1.5vh,20px);border:1px solid var(--border-strong);border-radius:8px;background:rgba(0,255,204,0.03);text-align:center;">
         <p style="font-size:var(--body-size);color:var(--cyan);font-weight:600;">Key Lesson: Keeping software up to date is the most cost-effective security control available.</p>
-        <p style="font-size:clamp(0.55rem,0.8vw,0.65rem);color:var(--text-dim);margin-top:6px;">The attacker's Monero wallet provides a potential attribution lead for law enforcement.</p>
-        <p style="font-size:clamp(0.45rem,0.7vw,0.55rem);color:var(--text-dim);margin-top:4px;font-family:var(--font-mono);">Full evidence: Evidence Portfolio (D4) &bull; Exported IOCs &bull; VirusTotal reports &bull; IDS alert data</p>
+        <p style="font-size:clamp(0.8rem,1.15vw,1rem);color:var(--text-dim);margin-top:8px;">The attacker's Monero wallet provides a potential attribution lead for law enforcement.</p>
+        <p style="font-size:clamp(0.75rem,1.05vw,0.9rem);color:var(--text-dim);margin-top:5px;font-family:var(--font-mono);">Full evidence: Evidence Portfolio (D4) &bull; Exported IOCs &bull; VirusTotal reports &bull; IDS alert data</p>
     </div>
 </section>
 
