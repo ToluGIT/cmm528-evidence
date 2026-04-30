@@ -567,6 +567,7 @@
         <a href="#lab3">Lab 3: IDS</a>
         <a href="#lab6">Lab 6: Honeypot</a>
         <a href="#lab7">Lab 7: L2 Sec</a>
+        <a href="#unified">Unified Topology</a>
         <a href="#recommendations">Recommendations</a>
         <a href="#analysis">Analysis</a>
     </nav>
@@ -1750,6 +1751,29 @@
                     <a href="02_lab_portfolio/lab7_layer2/screenshots/lab7_proof_port_security_mac_spoof.png" class="file-item">
                         <span class="file-icon">P</span>
                         <span class="file-name">proof_port_security_mac_spoof</span>
+                        <span class="file-type img">PNG</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Unified Network Topology -->
+        <section class="section" id="unified">
+            <div class="section-header">
+                <span class="section-num">UT</span>
+                <h2>Unified Network Topology — All 5 Labs Integrated</h2>
+                <span class="section-count">1 file</span>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-header"><h3>Consolidated Topology Diagram</h3></div>
+                <p style="margin: 0.5rem 0 1rem 0; color: var(--text-dim); line-height: 1.6;">
+                    The diagram below presents the <strong>composite defence-in-depth architecture</strong> produced by layering all five lab controls onto the same physical topology. Each control operates at a different OSI layer and addresses a distinct threat category, so together they form overlapping protective measures rather than redundant ones: Lab 1's Zone-Based Policy Firewall on R3 enforces traffic policy between INSIDE, CONFROOM, and INTERNET zones; Lab 2's IPSec VPN between R1 and R3 provides confidentiality and integrity for inter-site traffic across the untrusted core; Lab 3's Suricata IDS sensor on the Ubuntu VM passively monitors the SPAN port from S3 without affecting throughput; Lab 6's Cowrie honeypot on 192.168.33.150 exposes fake SSH/Telnet services to capture attacker behaviour; and Lab 7's Layer 2 hardening on S2 and S3 prevents CAM-flooding, ARP-spoofing, DHCP starvation, STP manipulation, and VLAN hopping at the access edge. The combined architecture reflects the NIST Cybersecurity Framework's <em>Protect</em> and <em>Detect</em> functions, embodying the principle that no single control is sufficient — defence must be layered.
+                </p>
+                <div class="file-grid">
+                    <a href="02_lab_portfolio/unified_network_diagram.png" class="file-item">
+                        <span class="file-icon">D</span>
+                        <span class="file-name">unified_network_diagram</span>
                         <span class="file-type img">PNG</span>
                     </a>
                 </div>
