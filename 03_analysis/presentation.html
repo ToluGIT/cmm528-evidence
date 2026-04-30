@@ -439,6 +439,57 @@ ul.cyber-list li::before {
     color: var(--text-secondary);
 }
 
+/* CIA impact cards — compact row, same visual language as STRIDE */
+.cia-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(6px, 1vw, 12px);
+    margin-top: clamp(6px, 1vh, 12px);
+}
+.cia-card {
+    border-radius: 8px;
+    padding: clamp(6px, 0.9vh, 12px) clamp(10px, 1.2vw, 16px);
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2px, 0.3vh, 4px);
+}
+.cia-card .cia-letter {
+    font-family: var(--font-display);
+    font-size: clamp(0.85rem, 1.6vw, 1.3rem);
+    font-weight: 700;
+    line-height: 1;
+}
+.cia-card .cia-title {
+    font-family: var(--font-mono);
+    font-size: clamp(0.55rem, 0.85vw, 0.7rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.cia-card .cia-rating {
+    font-size: 0.75em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+.rating-high { background: rgba(192,57,43,0.3); color: #ec7063; }
+.rating-med { background: rgba(183,149,11,0.3); color: #f4d03f; }
+.cia-card .cia-desc {
+    font-size: clamp(0.7rem, 0.95vw, 0.82rem);
+    line-height: 1.35;
+    color: var(--text-secondary);
+}
+.cia-c { background: rgba(192,57,43,0.12); border-color: rgba(192,57,43,0.4); }
+.cia-c .cia-letter { color: #ec7063; }
+.cia-i { background: rgba(211,84,0,0.12); border-color: rgba(211,84,0,0.4); }
+.cia-i .cia-letter { color: #f39c12; }
+.cia-a { background: rgba(183,149,11,0.12); border-color: rgba(183,149,11,0.4); }
+.cia-a .cia-letter { color: #f4d03f; }
+
 .stride-s { background: rgba(26,82,118,0.15); border-color: rgba(26,82,118,0.4); }
 .stride-s .stride-letter, .stride-s .stride-title { color: #5dade2; }
 .stride-t { background: rgba(123,36,28,0.15); border-color: rgba(123,36,28,0.4); }
@@ -1142,8 +1193,30 @@ body.edit-active [contenteditable]:focus {
             <span class="stride-desc">Flash exploit gains arbitrary code execution from browser context. No user interaction required beyond browsing.</span>
         </div>
     </div>
+
+    <div class="reveal" style="margin-top:clamp(8px,1.4vh,16px);">
+        <p style="font-family:var(--font-mono);font-size:clamp(0.6rem,0.95vw,0.75rem);color:var(--text-dim);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:clamp(4px,0.6vh,8px);">CIA Triad &mdash; Impact Assessment</p>
+        <div class="cia-grid">
+            <div class="cia-card cia-c">
+                <span class="cia-letter">C</span>
+                <span class="cia-title">Confidentiality <span class="cia-rating rating-high">HIGH</span></span>
+                <span class="cia-desc">Zbot credential-theft and keylogging capability. OS fingerprint (Win 7 NT 6.1, x64) exfiltrated to mining pool via JSON-RPC.</span>
+            </div>
+            <div class="cia-card cia-i">
+                <span class="cia-letter">I</span>
+                <span class="cia-title">Integrity <span class="cia-rating rating-high">HIGH</span></span>
+                <span class="cia-desc">Flash exploit corrupts ByteArray memory. bprocess.exe (NSIS dropper) modifies system and installs XMRig as unauthorised miner.</span>
+            </div>
+            <div class="cia-card cia-a">
+                <span class="cia-letter">A</span>
+                <span class="cia-title">Availability <span class="cia-rating rating-med">MEDIUM</span></span>
+                <span class="cia-desc">XMRig CPU hijack = effective DoS on workstation. Directly caused Charlie&apos;s slow-performance helpdesk ticket.</span>
+            </div>
+        </div>
+    </div>
+
     <p class="reveal" style="font-size:clamp(0.8rem,1.2vw,1rem);color:var(--text-dim);margin-top:clamp(4px,0.8vh,10px);text-align:center;font-family:var(--font-mono);">
-        All 6 STRIDE categories impacted  - multi-dimensional compromise requiring comprehensive remediation
+        STRIDE threats + CIA impact  - multi-dimensional compromise requiring comprehensive remediation
     </p>
 </section>
 
