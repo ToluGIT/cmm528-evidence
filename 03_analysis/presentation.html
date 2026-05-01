@@ -687,64 +687,6 @@ nav.nav-dots .dot.active {
 }
 
 /* ===========================================
-   INLINE EDITING
-   =========================================== */
-.edit-hotzone {
-    position: fixed;
-    top: 0; left: 0;
-    width: 80px; height: 80px;
-    z-index: 10000;
-    cursor: pointer;
-}
-
-.edit-toggle {
-    position: fixed;
-    top: 12px; left: 12px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    color: var(--cyan);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    z-index: 10001;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    font-family: var(--font-body);
-}
-
-.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
-
-.edit-banner {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    background: linear-gradient(90deg, rgba(0,255,204,0.1), rgba(255,0,170,0.1));
-    border-bottom: 1px solid var(--border-strong);
-    padding: 4px 0;
-    text-align: center;
-    font-size: 11px;
-    font-family: var(--font-mono);
-    color: var(--cyan);
-    letter-spacing: 0.1em;
-    z-index: 9997;
-    display: none;
-}
-
-.edit-banner.active { display: block; }
-
-body.edit-active [contenteditable] {
-    outline: 1px dashed rgba(0,255,204,0.3);
-    outline-offset: 2px;
-    cursor: text;
-}
-
-body.edit-active [contenteditable]:focus {
-    outline-color: var(--cyan);
-    background: rgba(0,255,204,0.03);
-}
-
-/* ===========================================
    CONCLUSION SLIDE
    =========================================== */
 .conclusion-slide {
@@ -767,11 +709,6 @@ body.edit-active [contenteditable]:focus {
 
 <!-- Nav Dots -->
 <nav class="nav-dots" id="navDots"></nav>
-
-<!-- Inline Edit Controls -->
-<div class="edit-hotzone" id="editHotzone"></div>
-<button class="edit-toggle" id="editToggle">&#9998; Edit</button>
-<div class="edit-banner" id="editBanner">EDIT MODE  - Click any text to edit &bull; Ctrl+S to save file</div>
 
 <!-- ===================== SLIDE 1: TITLE ===================== -->
 <section class="slide title-slide">
@@ -1349,7 +1286,6 @@ class SlidePresentation {
 
     setupKeyboardNav() {
         document.addEventListener('keydown', (e) => {
-            if (e.target.getAttribute && e.target.getAttribute('contenteditable')) return;
             switch(e.key) {
                 case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
                     e.preventDefault();
@@ -1435,115 +1371,8 @@ class SlidePresentation {
     }
 }
 
-/* ===========================================
-   INLINE EDITOR
-   =========================================== */
-class InlineEditor {
-    constructor() {
-        this.isActive = false;
-        this.toggle = document.getElementById('editToggle');
-        this.banner = document.getElementById('editBanner');
-        this.hotzone = document.getElementById('editHotzone');
-        this.setupHotzone();
-        this.setupKeyboard();
-        this.loadSavedEdits();
-    }
-
-    setupHotzone() {
-        let hideTimeout = null;
-        this.hotzone.addEventListener('mouseenter', () => {
-            clearTimeout(hideTimeout);
-            this.toggle.classList.add('show');
-        });
-        this.hotzone.addEventListener('mouseleave', () => {
-            hideTimeout = setTimeout(() => {
-                if (!this.isActive) this.toggle.classList.remove('show');
-            }, 400);
-        });
-        this.toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
-        this.toggle.addEventListener('mouseleave', () => {
-            hideTimeout = setTimeout(() => {
-                if (!this.isActive) this.toggle.classList.remove('show');
-            }, 400);
-        });
-        this.toggle.addEventListener('click', () => this.toggleEditMode());
-        this.hotzone.addEventListener('click', () => this.toggleEditMode());
-    }
-
-    setupKeyboard() {
-        document.addEventListener('keydown', (e) => {
-            if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable') && !e.ctrlKey && !e.metaKey) {
-                this.toggleEditMode();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                if (this.isActive) this.exportFile();
-            }
-        });
-    }
-
-    toggleEditMode() {
-        this.isActive = !this.isActive;
-        document.body.classList.toggle('edit-active', this.isActive);
-        this.toggle.classList.toggle('active', this.isActive);
-        this.banner.classList.toggle('active', this.isActive);
-        this.toggle.innerHTML = this.isActive ? '&#10003; Done' : '&#9998; Edit';
-
-        const editables = document.querySelectorAll('h1, h2, h3, p, li, span, td, em, strong');
-        editables.forEach(el => {
-            if (this.isActive) {
-                el.setAttribute('contenteditable', 'true');
-                el.addEventListener('input', () => this.saveEdits());
-            } else {
-                el.removeAttribute('contenteditable');
-            }
-        });
-    }
-
-    saveEdits() {
-        try {
-            const data = {};
-            document.querySelectorAll('[contenteditable]').forEach((el, i) => {
-                data[i] = el.innerHTML;
-            });
-            localStorage.setItem('cmm528-presentation-edits', JSON.stringify(data));
-        } catch(e) {}
-    }
-
-    loadSavedEdits() {
-        try {
-            const saved = localStorage.getItem('cmm528-presentation-edits');
-            if (!saved) return;
-            /* Edits are restored when edit mode is toggled - for clean initial load we skip auto-restore */
-        } catch(e) {}
-    }
-
-    exportFile() {
-        const editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
-        editableEls.forEach(el => el.removeAttribute('contenteditable'));
-        document.body.classList.remove('edit-active');
-        this.toggle.classList.remove('active', 'show');
-        this.banner.classList.remove('active', 'show');
-
-        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-
-        document.body.classList.add('edit-active');
-        editableEls.forEach(el => el.setAttribute('contenteditable', 'true'));
-        this.toggle.classList.add('active');
-        this.banner.classList.add('active');
-
-        const blob = new Blob([html], { type: 'text/html' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'cmm528-presentation.html';
-        a.click();
-        URL.revokeObjectURL(a.href);
-    }
-}
-
 /* Initialize */
 const presentation = new SlidePresentation();
-const editor = new InlineEditor();
 </script>
 </body>
 </html>
